@@ -10,10 +10,15 @@ import datetime
 import multiprocessing
 import time
 
-import tqdm
-
 from .base import DecoratorContextManager
 from .io import rotateItems
+
+__all__ = [
+    "WaitingBar",
+    "LoggingDisabler",
+    "configLogging",
+    "pPrint"
+]
 
 
 class WaitingBar(DecoratorContextManager):
@@ -89,24 +94,13 @@ class LoggingDisabler:
             self._logger.disabled = self._previous_status
 
 
-class DeprecationFilter:
+class _DeprecationFilter:
     def filter(self, record: LogRecord):
         if "depreca" in record.msg:
             return 0
         return 1
 
-class TqdmLoggingHandler(logging.Handler):
-    def emit(self, record):
-        try:
-            msg = self.format(record)
-            tqdm.tqdm.write(msg)
-            self.flush()
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            self.handleError(record)
-
-def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, useTqdm: bool = False, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
+def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
     """Logger configuration.
 
     Args:
@@ -141,12 +135,12 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, us
         },
         "filters": {
             "deprecation": {
-                "()": DeprecationFilter
+                "()": _DeprecationFilter
             }
         },
         "handlers": {
             "console": {
-                "class": TqdmLoggingHandler if useTqdm else "logging.StreamHandler",
+                "class": "logging.StreamHandler",
                 "level": level,
                 "formatter": "simple",
                 "stream": "ext://sys.stdout"
@@ -181,6 +175,7 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, us
     sys.excepthook = handleException
 
     def handleWarning(message, category, filename, lineno, file=None, line=None):
+        _ = file
         logger = logging.getLogger(rootName)
         if ignoreWarnings is not None and category in ignoreWarnings:
             return

@@ -9,7 +9,10 @@ from torch import nn
 from torch.cuda._utils import _get_device_index
 from torch._utils import ExceptionWrapper
 
-
+__all__ = [
+    "parallelFunction",
+    "DataParallel"
+]
 
 def _get_a_var(obj):
     if isinstance(obj, torch.Tensor):
@@ -24,7 +27,6 @@ def _get_a_var(obj):
             if isinstance(result, torch.Tensor):
                 return result
     return None
-
 
 def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=None):
     r"""Applies each `module` in :attr:`modules` in parallel on arguments
@@ -92,7 +94,6 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
             output.reraise()
         outputs.append(output)
     return outputs
-
 
 def parallelFunction(function: Callable):
     """A decorator for class-methods that want to parallel-apply.

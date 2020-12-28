@@ -1,3 +1,4 @@
+"""Module for file operations"""
 import logging
 
 import os
@@ -6,6 +7,12 @@ import atexit
 import time
 from subprocess import Popen, PIPE
 
+__all__ = [
+    "openTensorboard",
+    "deleteDir",
+    "deleteFilesOlderThan",
+    "rotateItems"
+]
 
 def openTensorboard(log_dir: str, port: int):
     process = Popen(["tensorboard", "--logdir", log_dir, "--port", str(port)], stdout=PIPE, stderr=PIPE)

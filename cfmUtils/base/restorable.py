@@ -2,6 +2,11 @@
 from typing import Any, Dict
 import abc
 
+__all__ = [
+    "Dictable",
+    "Restorable"
+]
+
 class Dictable(abc.ABC):
     """An abstract class implements PyTorch-like state-dict."""
 

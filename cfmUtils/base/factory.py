@@ -1,6 +1,9 @@
 """Module of Factory."""
 from typing import Any
 
+__all__ = [
+    "Factory"
+]
 
 class Factory:
     """A factory. Inherit from it to create a lots of factories.
@@ -23,7 +26,7 @@ class Factory:
 
     @classmethod
     def register(cls, key: str):
-        """Decorator function for register anything into factory.
+        """Decorator for register anything into factory.
 
         Args:
             key (str): The key for registering an object.

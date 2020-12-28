@@ -1,16 +1,17 @@
-"""Module of Config"""
+"""Module of serialization/deserialization."""
 import logging
 from logging import Logger
 from pathlib import Path
 from typing import Any, Dict, Type, TypeVar, get_origin, get_args, _SpecialForm, Union, _GenericAlias
-from dataclasses import Field, is_dataclass
+from dataclasses import Field, is_dataclass, asdict
 
 import yaml
 
 T = TypeVar("T")
 
 __all__ = [
-    "read"
+    "read",
+    "serialize"
 ]
 
 def _preprocess(plainStr: str, **varsToReplace):
@@ -21,6 +22,15 @@ def _preprocess(plainStr: str, **varsToReplace):
 def _assert(name, instance, types):
     if not isinstance(instance, types):
         raise TypeError(f"{name} in yaml not match the type definition in {name} ({types}), got {type(instance)}.")
+
+def _serialize(instance: Any) -> dict:
+    if isinstance(instance, (str, int, bool, float)):
+        return instance
+    if isinstance(instance, list, set, tuple):
+        return instance.__class__(_serialize(x) for x in instance)
+    if isinstance(instance, dict):
+        return {k: _serialize(v) for k, v in instance.items()}
+    return {k: _serialize(v) for k, v in instance.__dict__}
 
 def _deserialize(parsedYaml: Union[dict, str, int, bool, float, list, set, tuple], classDef: Type[T], logger: Logger) -> T:
     if classDef in (str, int, bool, float):
@@ -77,3 +87,18 @@ def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logg
     plainYaml = Path(configPath).read_text()
     plainYaml = _preprocess(plainYaml, **varsToReplace)
     return _deserialize(yaml.full_load(plainYaml), classDef, logger or logging)
+
+def serialize(instance: Any, logger: Logger = None) -> dict:
+    """Serialize any object to dict-like
+
+    Args:
+        instance (Any): Any object.
+        logger (Logger, optional): Logger for logging. Defaults to None.
+
+    Returns:
+        dict: The serialized dict.
+    """
+    if is_dataclass(instance):
+        return asdict(instance)
+    (logger or logging).warning("Instance is not a dataclass, use custom serialize method.")
+    return _serialize(instance)

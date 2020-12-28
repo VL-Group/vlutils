@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 import os
 import logging
 import shutil
@@ -8,22 +8,40 @@ from logging import Logger
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
+import yaml
 
 from .io import rotateItems
-from .config import Config
+from .config import serialize
+
+__all__ = [
+    "Saver"
+]
 
 class Saver(SummaryWriter):
-    """A class for load and save model"""
+    """A class for load and save model
+
+    Example:
+    ```python
+        #  Save path: `saved/myModel`.
+        #     config: Any object that can dump to yaml.
+        # autoManage: If True, rename `latest` folder to current time and recreate `latest` folder.
+        #   maxItems: Keep items (files/folders) in the save path no more than it. If <= 0, ignore.
+        #    reserve: When autoManage is on and `latest` folder exists, continue to save file in current `latest` folder other than rotate it.
+        #   dumpFile: Dump source code and config to the save path.
+        saver = Saver("saved/myModel", config, autoManage=True, maxItems=10, reserve=False, dumpFile="mySoureCode/path")
+    ```
+    """
     NewestDir = "latest"
-    def __init__(self, config: Config, saveDir: str, autoManage: bool = True, maxItems: int = 25, reserve: bool = False):
+    def __init__(self, saveDir: str, config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
         """init
 
         Args:
-            config (Config): The running config
             saveDir (str): Direcotry to save model
+            config (Any): The config that can dump to yaml
             autoManage (bool, optional): Auto create `latest` folder and rotate folders by time to save the new model. Defaults to True.
             maxItems (int, optional): Max old checkpoints to preserve. Defaults to 25.
             reserve (bool, optional): When autoManage is on and `latest` folder exists, continue to save file in current `latest` folder other than rotate it. Defaults to False.
+            dumpFile (str, optional): The path of any folder want to save.
         """
         if saveDir.endswith(self.NewestDir):
             autoManage = False
@@ -32,19 +50,21 @@ class Saver(SummaryWriter):
             if os.path.exists(os.path.join(saveDir, self.NewestDir)) and not reserve:
                 shutil.move(os.path.join(saveDir, self.NewestDir), os.path.join(saveDir, datetime.datetime.now().strftime(r"%y%m%d-%H%M%S")))
             os.makedirs(os.path.join(saveDir, self.NewestDir), exist_ok=True)
-            rotateItems(saveDir, maxItems)
+            if maxItems > 0:
+                rotateItems(saveDir, maxItems)
             self._saveDir = os.path.join(saveDir, self.NewestDir)
         else:
             self._saveDir = saveDir
         super().__init__(self._saveDir)
         self._savePath = os.path.join(self._saveDir, self.NewestDir)
-        if not reserve:
-            self._dumpFile(saveDir, config)
+        if config is not None:
+            with open(os.path.join(self._saveDir, "config.json"), "w") as fp:
+                yaml.dump(serialize(config), fp)
+        if dumpFile is not None and not str.isspace(dumpFile) and os.path.exists(dumpFile):
+            self._dumpFile(dumpFile, config)
 
     def _dumpFile(self, path: str, config):
         shutil.copytree(path, os.path.join(self._saveDir, "dump"), symlinks=True, ignore=lambda src, path: [x for x in path if x == "__pycache__"], ignore_dangling_symlinks=True)
-        with open(os.path.join(self._saveDir, "config.json"), "w") as fp:
-            fp.write(str(config))
 
     @property
     def SaveDir(self) -> str:

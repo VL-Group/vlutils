@@ -2,9 +2,17 @@
 import os
 import logging
 import time
+from typing import List, Dict, Tuple
 
 import torch
 import pynvml
+
+__all__ = [
+    "preAllocateMem",
+    "queryGPU",
+    "gpuInfo",
+    "Timer"
+]
 
 def preAllocateMem(memSize: int):
     """Pre-allocate VRAM in GPUs.
@@ -18,7 +26,12 @@ def preAllocateMem(memSize: int):
         del x
     return
 
-def gpuInfo():
+def gpuInfo() -> List[Dict[str, int]]:
+    """Helper for list all gpus.
+
+    Returns:
+        List[Dict[str, int]]: A list of dicts { "memory.used": int, "memory.total": int }, sorted by `CUDA_DEVICE_ORDER`
+    """
     pynvml.nvmlInit()
     deviceCount = pynvml.nvmlDeviceGetCount()
     gpus = list()
@@ -28,7 +41,7 @@ def gpuInfo():
         gpus.append({ "memory.used": info.used / 1048576, "memory.total": info.total / 1048576 })
     return gpus
 
-def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1, needVRamEachGPU: int = -1, WriteOSEnv: bool = True, logger: logging.Logger = None) -> list:
+def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1, needVRamEachGPU: int = -1, writeOSEnv: bool = True, logger: logging.Logger = None) -> List[Tuple[int, int]]:
     """Query GPUs that meet requirements.
 
     Example:
@@ -75,6 +88,8 @@ def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1,
     if needGPUs < 0:
         needGPUs = len(gpus)
 
+    needGPUs = min(needGPUs, len(givenList))
+
     # logger.debug("\n" + str(gpus))
     if isinstance(givenList, list):
         it = givenList
@@ -83,7 +98,7 @@ def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1,
 
     gpus = [(i, gpus[i]) for i in it]
     if wantsMore:
-        gpus = sorted(gpus, key=lambda item: item['memory.used'])
+        gpus = sorted(gpus, key=lambda item: item[1]['memory.used'])
 
     gpuList = []
     for i, g in gpus:
@@ -102,7 +117,7 @@ def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1,
         # keep order
         gpuList = sorted(gpuList, key=lambda item: item[0])
         logger.debug("Found %d %s satisfied", len(gpuList), "gpu" if len(gpuList) == 1 else "gpus")
-        if WriteOSEnv:
+        if writeOSEnv:
             os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(map(str, [item[0] for item in gpuList]))
             newGPUList = []
             j = 0
