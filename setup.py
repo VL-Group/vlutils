@@ -13,7 +13,7 @@ setup(
   download_url = "https://github.com/cfm-uestc/cfmUtils/releases",    # I explain this later on
   keywords = ["Utilities"],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
-          "torch>=1.0",
+          "torch>=1.7",
           "tqdm",
           "nvidia-ml-py3"
       ],
@@ -21,11 +21,7 @@ setup(
     "Development Status :: 3 - Alpha",      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
     "Intended Audience :: Developers",      # Define that your audience are developers
     "Topic :: Software Development :: Build Tools",
-    "License :: OSI Approved :: Apache license 2.0",   # Again, pick a license
-    "Programming Language :: Python :: 3",      #Specify which pyhton versions that you want to support
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
+    "License :: OSI Approved :: Apache Software License",   # Again, pick a license
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
   ],
