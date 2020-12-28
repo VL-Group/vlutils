@@ -35,6 +35,12 @@ def deleteFilesOlderThan(folder: str, seconds: int):
                 os.remove(os.path.join(folder, f))
 
 def rotateItems(folder: str, count: int):
+    """Rotate items in a directory (Old item will be delete until total-amount < desired).
+
+    Args:
+        folder (str): Directory to rotate.
+        count (int): How many newer items want to preserve.
+    """
     file_list = []
     for f in os.listdir(folder):
         file_list.append(f)

@@ -1,3 +1,4 @@
+"""Module of runtime utils"""
 import os
 import logging
 import time
@@ -6,6 +7,11 @@ import torch
 import pynvml
 
 def preAllocateMem(memSize: int):
+    """Pre-allocate VRAM in GPUs.
+
+    Args:
+        memSize (int): Preserved VRAM amount (MiB).
+    """
     devices = torch.cuda.device_count()
     for d in range(devices):
         x = torch.rand((256, 1024, memSize), device=f"cuda:{d}")
@@ -23,7 +29,43 @@ def gpuInfo():
     return gpus
 
 def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1, needVRamEachGPU: int = -1, WriteOSEnv: bool = True, logger: logging.Logger = None) -> list:
+    """Query GPUs that meet requirements.
 
+    Example:
+    ```python
+        # Find a GPU has free VRAM >= 2000MiB
+        queryGPU(needGPUs=1, needVRamEachGPU=2000)
+        # Only when all GPUs are free, otherwise raise EnvironmentError
+        queryGPU(needGPUs=-1, needVRamEachGPU=-1)
+        # Don't write CUDA_VISIBLE_DEVICE, return real GPU ID
+        gpuList = queryGPU(writeOSEnv=False)
+        # A typical usage
+        while True:
+            try:
+                queryGPU(needGPUs=3, needVRamEachGPU=8000)
+                # Go to run
+                break
+            except EnvironmentError:
+                # Wait 15s
+                time.sleep(1500)
+            # Begin GPU tasks
+            run()
+    ```
+
+    Args:
+        wantsMore (bool, optional): Wants at least `needGPUs` GPUs, if there are more GPUs, use them all. Defaults to False.
+        givenList (list, optional): If given, only GPUs id in this list will be queried. Defaults to None.
+        needGPUs (int, optional): How many GPUs take in demand. Defaults to -1.
+        needVRamEachGPU (int, optional): It is OK to use a GPU if free VRAM (MiB) is larger than this threshold. Defaults to -1.
+        writeOSEnv (bool, optional): Overwrite env parameter 'CUDA_VISIBLE_DEVICES'. Defaults to True.
+        logger (logging.Logger, optional): For logging. Defaults to None.
+
+    Raises:
+        EnvironmentError: No GPU satisfied requirements.
+
+    Returns:
+        List[Tuple[int, int]]: List of available gpu id and free VRAM.
+    """
     logger = logger or logging
 
     # keep the devices order same as in nvidia-smi
@@ -79,6 +121,21 @@ def queryGPU(wantsMore: bool = True, givenList: list = None, needGPUs: int = -1,
 
 
 class Timer:
+    """A simple timer
+
+    Example:
+    ```python
+        # Start the timer
+        timer = Timer()
+        ...
+        # Last interval and total spent from start
+        # 3.0,    3.0
+        interval, total = timer.Tick()
+        ...
+        # 4.4,    7.4
+        interval, total = timer.Tick()
+    ```
+    """
     def __init__(self):
         self._initial = self._tick = time.time()
 

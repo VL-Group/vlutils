@@ -55,7 +55,7 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
     results = {}
     grad_enabled = torch.is_grad_enabled()
 
-    def _worker(i, module, input, kwargs, device=None):
+    def _worker(i, module, input, kwargs, device=None): # pylint: disable = redefined-builtin
         torch.set_grad_enabled(grad_enabled)
         if device is None:
             device = _get_a_var(input).get_device()
@@ -67,7 +67,7 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
                 output = getattr(module, funcName)(*input, **kwargs)
             with lock:
                 results[i] = output
-        except Exception:
+        except Exception: # pylint: disable = broad-except
             with lock:
                 results[i] = ExceptionWrapper(
                     where="in replica {} on device {}".format(i, device))

@@ -7,7 +7,7 @@ Exports:
     parallelFunction: A decorator for class-methods that want to parallel-apply.
     Factory: Factory design mode.
 """
-from .decoratorContextManager import DecoratorContextManager
-from .restorable import Restorable
 from .dataParallel import DataParallel, parallelFunction
+from .decoratorContextManager import DecoratorContextManager
 from .factory import Factory
+from .restorable import Restorable

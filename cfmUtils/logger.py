@@ -1,3 +1,4 @@
+"""Module of logging"""
 import os
 import sys
 import json
@@ -16,6 +17,20 @@ from .io import rotateItems
 
 
 class WaitingBar(DecoratorContextManager):
+    """A CLI tool for printing waiting bar.
+
+    Example:
+    ```python
+        @WaitingBar("msg")
+        def longTime():
+            # Long time operation
+            ...
+
+        with WaitingBar("msg"):
+            # Long time operation
+            ...
+    ```
+    """
     def __init__(self, msg: str, ncols: int = 10):
         assert ncols > 8, f"ncols must greater than 8, got {ncols}"
         self._msg = msg
@@ -49,6 +64,16 @@ class WaitingBar(DecoratorContextManager):
 
 
 class LoggingDisabler:
+    """Disable or enable logging temporarily.
+
+    Example:
+    ```python
+        # True -> disable logging, False -> enable logging
+        with LoggingDisabler(logger, True):
+            # Some operations
+            ...
+    ```
+    """
     def __init__(self, logger: logging.Logger, disable: bool):
         self._logger = logger
         self._disable = disable
@@ -82,6 +107,20 @@ class TqdmLoggingHandler(logging.Handler):
             self.handleError(record)
 
 def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, useTqdm: bool = False, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
+    """Logger configuration.
+
+    Args:
+        logDir (str): Log files placed in this folder.
+        rootName (str): Logger's root name.
+        level (str): Minimal level that will be logged.
+        useTqdm (bool, optional): Not used. Defaults to False.
+        logName (str, optional): Log file name, if None, use the formatted current time. Defaults to None.
+        rotateLogs (int, optional): Whether to perform rotate in this folder, -1 is don't rotate. Defaults to 10.
+        ignoreWarnings (list, optional): Which warnings don't want to be logged. Defaults to None.
+
+    Returns:
+        logging.Logger: The configed logger.
+    """
     os.makedirs(logDir, exist_ok=True)
     if rotateLogs > 0:
         rotateItems(logDir, rotateLogs)
@@ -151,4 +190,12 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, us
 
 
 def pPrint(d: dict) -> str:
+    """Print dict prettier.
+
+    Args:
+        d (dict): The input dict.
+
+    Returns:
+        str: Resulting string.
+    """
     return str(json.dumps(d, default=lambda x: x.__dict__, indent=4))

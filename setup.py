@@ -1,4 +1,5 @@
-from distutils.core import setup
+
+from setuptools import setup, find_packages
 
 setup(
   name = "cfmUtils",         # How you named your package folder (MyLib)
@@ -12,12 +13,12 @@ setup(
   download_url = "https://github.com/cfm-uestc/cfmUtils/releases",    # I explain this later on
   keywords = ["Utilities"],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
-          "pytorch",
+          "torch>=1.0",
           "tqdm",
-          "pynvml"
+          "nvidia-ml-py3"
       ],
   classifiers=[
-    "Development Status :: 5 - Production/Stable",      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
+    "Development Status :: 3 - Alpha",      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
     "Intended Audience :: Developers",      # Define that your audience are developers
     "Topic :: Software Development :: Build Tools",
     "License :: OSI Approved :: Apache license 2.0",   # Again, pick a license
@@ -28,4 +29,5 @@ setup(
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
   ],
+  python_requires='>=3.4',
 )
