@@ -18,6 +18,9 @@ jobs:
         pip install
         setuptools wheel
         --user
+    - name: Preprocess - compose version
+      run: >-
+        python ".github/worflows/updateVersion.py" --branch ${{ github.head_ref }} --hash ${{ github.sha }}
     - name: Build a binary wheel and a source tarball
       run: >-
         python setup.py sdist bdist_wheel
