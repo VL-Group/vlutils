@@ -58,7 +58,7 @@ class Saver(SummaryWriter):
         super().__init__(self._saveDir)
         self._savePath = os.path.join(self._saveDir, self.NewestDir)
         if config is not None:
-            with open(os.path.join(self._saveDir, "config.json"), "w") as fp:
+            with open(os.path.join(self._saveDir, "config.yaml"), "w") as fp:
                 yaml.dump(serialize(config), fp)
         if dumpFile is not None and not str.isspace(dumpFile) and os.path.exists(dumpFile):
             self._dumpFile(dumpFile, config)

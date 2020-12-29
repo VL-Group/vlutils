@@ -4,6 +4,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, Dict, Type, TypeVar, get_origin, get_args, _SpecialForm, Union, _GenericAlias
 from dataclasses import Field, is_dataclass, asdict
+import keyword
 
 import yaml
 
@@ -18,6 +19,16 @@ def _preprocess(plainStr: str, **varsToReplace):
     for key, value in varsToReplace.items():
         plainStr = plainStr.replace("{{{0}}}".format(key), str(value))
     return plainStr
+
+def _replaceKeyword(parsedYaml: dict) -> dict:
+    if not isinstance(parsedYaml, dict):
+        return parsedYaml
+    newDict = dict()
+    for key, value in parsedYaml.items():
+        if keyword.iskeyword(key):
+            key += "_"
+        newDict[key] = _replaceKeyword(value)
+    return newDict
 
 def _assert(name, instance, types):
     if not isinstance(instance, types):
@@ -85,8 +96,11 @@ def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logg
         T: The resulting config.
     """
     plainYaml = Path(configPath).read_text()
-    plainYaml = _preprocess(plainYaml, **varsToReplace)
-    return _deserialize(yaml.full_load(plainYaml), classDef, logger or logging)
+    if isinstance(varsToReplace, dict):
+        plainYaml = _preprocess(plainYaml, **varsToReplace)
+    result = _deserialize(_replaceKeyword(yaml.full_load(plainYaml)), classDef, logger or logging)
+    result.summary = lambda: serialize(result, logger)
+    return result
 
 def serialize(instance: Any, logger: Logger = None) -> dict:
     """Serialize any object to dict-like

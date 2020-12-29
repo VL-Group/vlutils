@@ -10,5 +10,5 @@ Exports:
 from .dataParallel import DataParallel, parallelFunction
 from .decoratorContextManager import DecoratorContextManager
 from .factory import Factory
-from .restorable import Restorable
+from .restorable import Restorable, Dictable
 from .module import Module

@@ -88,11 +88,10 @@ def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1
     if needGPUs < 0:
         needGPUs = len(gpus)
 
-    needGPUs = min(needGPUs, len(givenList))
-
     # logger.debug("\n" + str(gpus))
     if isinstance(givenList, list):
         it = givenList
+        needGPUs = min(needGPUs, len(givenList))
     else:
         it = range(len(gpus))
 
