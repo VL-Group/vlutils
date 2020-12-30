@@ -22,9 +22,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          ref: r$${{ inputs.release-tag }}
+          ref: r${{ github.event.inputs.release-tag }}
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: r$${{ inputs.release-tag }}
+          branch: r${{ github.event.inputs.release-tag }}
