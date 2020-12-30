@@ -1,6 +1,0 @@
-name: 'Basic'
-description: 'Receive inputs'
-inputs:
-  release-tag:  # id of input
-    description: "Tag of release branch"
-    required: false
