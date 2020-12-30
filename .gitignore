@@ -10,6 +10,7 @@ saved*/
 *.brf
 *.log
 *.synctex.gz
+BUILD
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
