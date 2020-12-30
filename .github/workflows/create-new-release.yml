@@ -26,7 +26,7 @@ jobs:
           regex: '^\d+\.\d+\.\d+$'
       - name: Check branch name
         if: steps.regex-match.outputs.match == ''
-        run: exit 1
+        run: echo "Given release tag wrong, quit." && exit 1
       - name: Create new branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
