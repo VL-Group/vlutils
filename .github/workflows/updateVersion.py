@@ -3,19 +3,17 @@ import datetime
 
 parser = argparse.ArgumentParser(description='Script for compose version.')
 parser.add_argument('--branch', help="Current git branch.", type=str)
-parser.add_argument('--hash', help="Current commit SHA", type=str)
 
 args = parser.parse_args()
 
 
 branch: str = args.branch.split("/")[-1]
-sha: str = args.hash[:6]
 
 with open("cfmUtils/VERSION", "r") as fp:
     verions = fp.read()
 
 # check correct format
-major, minor, micro = verions.split(".")
+major, minor, micro = verions.strip().split(".")
 
 major = int(major)
 minor = int(minor)
