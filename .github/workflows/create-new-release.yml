@@ -27,12 +27,9 @@ jobs:
       - name: Check branch name
         if: steps.regex-match.outputs.match == ''
         run: exit 1
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Create new branch
+        uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          ref: r${{ github.event.inputs.release-tag }}
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: r${{ github.event.inputs.release-tag }}
