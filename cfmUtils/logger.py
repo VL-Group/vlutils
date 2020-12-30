@@ -1,7 +1,6 @@
 """Module of logging"""
 import os
 import sys
-import json
 import warnings
 import logging
 import logging.config
@@ -9,6 +8,9 @@ from logging import LogRecord
 import datetime
 import multiprocessing
 import time
+from io import StringIO
+
+import yaml
 
 from .base import DecoratorContextManager
 from .io import rotateItems
@@ -193,4 +195,6 @@ def pPrint(d: dict) -> str:
     Returns:
         str: Resulting string.
     """
-    return str(json.dumps(d, default=lambda x: x.__dict__, indent=4))
+    with StringIO() as stream:
+        yaml.safe_dump(d, stream, default_flow_style=False)
+        return stream.getvalue()

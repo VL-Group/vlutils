@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, Type, TypeVar, get_origin, get_args, _SpecialForm, Union, _GenericAlias
 from dataclasses import Field, is_dataclass, asdict
 import keyword
+from io import StringIO
 
 import yaml
 
@@ -114,5 +115,18 @@ def serialize(instance: Any, logger: Logger = None) -> dict:
     """
     if is_dataclass(instance):
         return asdict(instance)
-    (logger or logging).warning("Instance is not a dataclass, use custom serialize method.")
+    (logger or logging).debug("Instance is not a dataclass, use custom serialize method.")
     return _serialize(instance)
+
+def summary(instance) -> str:
+    """Serialize any object to yaml format summary
+
+    Args:
+        instance (Any): Any object.
+
+    Returns:
+        dict: The serialized string.
+    """
+    with StringIO() as stream:
+        yaml.safe_dump(serialize(instance), stream, default_flow_style=False)
+        return stream.getvalue()
