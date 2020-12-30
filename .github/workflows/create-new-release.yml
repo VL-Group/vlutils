@@ -47,6 +47,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
   test-n-build-publish:
     needs: [check-version-and-create-branch]
     # The type of runner that the job will run on
