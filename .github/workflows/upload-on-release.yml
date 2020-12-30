@@ -1,10 +1,13 @@
-name: Publish Python 🐍 distributions 📦 to TestPyPI
+name: Package Python 🐍 distributions 📦 and store into artifacts
 
-on: push
+on:
+  release:
+    types: # This configuration does not affect the page_build event above
+      - created
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to TestPyPI
+  build-n-store:
+    name: Build and store Python 🐍 distributions 📦 to artifacts
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
@@ -18,9 +21,9 @@ jobs:
         pip install
         setuptools wheel
         --user
-    - name: Preprocess - compose version
-      run: >-
-        python ".github/worflows/updateVersion.py" --branch ${{ github.head_ref }} --hash ${{ github.sha }}
+    # - name: Preprocess - compose version
+    #   run: >-
+    #     python ".github/workflows/updateVersion.py" --branch ${{ github.ref }} --hash ${{ github.sha }}
     - name: Build a binary wheel and a source tarball
       run: >-
         python setup.py sdist bdist_wheel
