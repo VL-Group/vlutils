@@ -37,6 +37,10 @@ class WaitingBar(DecoratorContextManager):
             # Long time operation
             ...
     ```
+
+    Args:
+        msg (str): Addtional message shows after bar.
+        ncols (int): Total columns of bar.
     """
     def __init__(self, msg: str, ncols: int = 10):
         assert ncols > 8, f"ncols must greater than 8, got {ncols}"
@@ -80,6 +84,10 @@ class LoggingDisabler:
             # Some operations
             ...
     ```
+
+    Args:
+        logger (logging.Logger): The target logger to interpolate.
+        disable (bool): Whether to disable logging.
     """
     def __init__(self, logger: logging.Logger, disable: bool):
         self._logger = logger

@@ -140,16 +140,14 @@ class DataParallel(nn.DataParallel):
         # parallel-apply
         foo.add(3, 4)
     ```
+
+    Args:
+        module (nn.Module): Module to be parallelized.
+        device_ids (Optional[List[Union[int, torch.device]]], optional): Devices to be placed on. Defaults to None.
+        output_device (Union[int, torch.device], optional): Devices where results placed. Defaults to None.
+        dim (int, optional): Which dimension of input to be splitted for parallel. Defaults to 0.
     """
     def __init__(self, module: nn.Module, device_ids: Optional[List[Union[int, torch.device]]] = None, output_device: Union[int, torch.device] = None, dim: int = 0):
-        """init function
-
-        Args:
-            module (nn.Module): Module to be parallelized.
-            device_ids (Optional[List[Union[int, torch.device]]], optional): Devices to be placed on. Defaults to None.
-            output_device (Union[int, torch.device], optional): Devices where results placed. Defaults to None.
-            dim (int, optional): Which dimension of input to be splitted for parallel. Defaults to 0.
-        """
         super().__init__(module, device_ids, output_device, dim)
         fns = [getattr(module, fn) for fn in dir(module) if callable(getattr(module, fn))]
         for fn in fns:
