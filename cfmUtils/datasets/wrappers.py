@@ -1,10 +1,12 @@
 """Module of wrapper datasets."""
 from torch.utils.data import Dataset
 
+
 __all__ = [
     "Zip",
     "Enumerate"
 ]
+
 
 class Zip(Dataset):
     """Wrapper dataset behaves like `zip()`.

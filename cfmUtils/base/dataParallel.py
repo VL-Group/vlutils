@@ -9,10 +9,12 @@ from torch import nn
 from torch.cuda._utils import _get_device_index
 from torch._utils import ExceptionWrapper
 
+
 __all__ = [
     "parallelFunction",
     "DataParallel"
 ]
+
 
 def _get_a_var(obj):
     if isinstance(obj, torch.Tensor):
@@ -27,6 +29,7 @@ def _get_a_var(obj):
             if isinstance(result, torch.Tensor):
                 return result
     return None
+
 
 def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=None):
     r"""Applies each `module` in :attr:`modules` in parallel on arguments
@@ -57,7 +60,7 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
     results = {}
     grad_enabled = torch.is_grad_enabled()
 
-    def _worker(i, module, input, kwargs, device=None): # pylint: disable = redefined-builtin
+    def _worker(i, module, input, kwargs, device=None):  # pylint: disable = redefined-builtin
         torch.set_grad_enabled(grad_enabled)
         if device is None:
             device = _get_a_var(input).get_device()
@@ -69,7 +72,7 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
                 output = getattr(module, funcName)(*input, **kwargs)
             with lock:
                 results[i] = output
-        except Exception: # pylint: disable = broad-except
+        except Exception:  # pylint: disable = broad-except
             with lock:
                 results[i] = ExceptionWrapper(
                     where="in replica {} on device {}".format(i, device))
@@ -94,6 +97,7 @@ def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=Non
             output.reraise()
         outputs.append(output)
     return outputs
+
 
 def parallelFunction(function: Callable):
     """A decorator for class-methods that want to parallel-apply.
@@ -163,8 +167,8 @@ class DataParallel(nn.DataParallel):
             for t in chain(self.module.parameters(), self.module.buffers()):
                 if t.device != self.src_device_obj:
                     raise RuntimeError("module must have its parameters and buffers "
-                                    "on device {} (device_ids[0]) but found one of "
-                                    "them on device: {}".format(self.src_device_obj, t.device))
+                                       "on device {} (device_ids[0]) but found one of "
+                                       "them on device: {}".format(self.src_device_obj, t.device))
 
             inputs, kwargs = self.scatter(inputs, kwargs, self.device_ids)
             if len(self.device_ids) == 1:

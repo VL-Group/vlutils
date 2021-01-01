@@ -7,12 +7,14 @@ from typing import List, Dict, Tuple
 import torch
 import pynvml
 
+
 __all__ = [
     "preAllocateMem",
     "queryGPU",
     "gpuInfo",
     "Timer"
 ]
+
 
 def preAllocateMem(memSize: int):
     """Pre-allocate VRAM in GPUs.
@@ -26,6 +28,7 @@ def preAllocateMem(memSize: int):
         del x
     return
 
+
 def gpuInfo() -> List[Dict[str, int]]:
     """Helper for list all gpus.
 
@@ -38,8 +41,9 @@ def gpuInfo() -> List[Dict[str, int]]:
     for i in range(deviceCount):
         handle = pynvml.nvmlDeviceGetHandleByIndex(i)
         info = pynvml.nvmlDeviceGetMemoryInfo(handle)
-        gpus.append({ "memory.used": info.used / 1048576, "memory.total": info.total / 1048576 })
+        gpus.append({"memory.used": info.used / 1048576, "memory.total": info.total / 1048576})
     return gpus
+
 
 def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1, needVRamEachGPU: int = -1, writeOSEnv: bool = True, logger: logging.Logger = None) -> List[Tuple[int, int]]:
     """Query GPUs that meet requirements.

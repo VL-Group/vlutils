@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 import os
 import logging
 import shutil
@@ -13,9 +13,11 @@ import yaml
 from .io import rotateItems
 from .config import serialize
 
+
 __all__ = [
     "Saver"
 ]
+
 
 class Saver(SummaryWriter):
     """A class for load and save model
@@ -40,6 +42,7 @@ class Saver(SummaryWriter):
         dumpFile (str, optional): The path of any folder want to save.
     """
     NewestDir = "latest"
+
     def __init__(self, saveDir: str, config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
         if saveDir.endswith(self.NewestDir):
             autoManage = False

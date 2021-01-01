@@ -2,10 +2,12 @@
 from typing import Any, Dict
 import abc
 
+
 __all__ = [
     "Dictable",
     "Restorable"
 ]
+
 
 class Dictable(abc.ABC):
     """An abstract class implements PyTorch-like state-dict."""
@@ -27,6 +29,7 @@ class Dictable(abc.ABC):
             stateDict (Dict[str, Any]): State-dict to be loaded.
         """
         raise NotImplementedError
+
 
 class Restorable(Dictable):
     """A class implements PyTorch-like state-dict.
@@ -50,14 +53,14 @@ class Restorable(Dictable):
         self.valuesToSave = set()
 
     def state_dict(self):
-        return { key: self.__dict__[key].state_dict() if callable(getattr(self.__dict__[key], "state_dict", None)) else self.__dict__[key] for key in self.valuesToSave }
+        return {key: self.__dict__[key].state_dict() if callable(getattr(self.__dict__[key], "state_dict", None)) else self.__dict__[key] for key in self.valuesToSave}
 
     def load_state_dict(self, stateDict):
         for key, value in self.__dict__.items():
             if not key.startswith("_"):
                 continue
             if callable(getattr(value, "load_state_dict", None)):
-                value.load_state_dict(stateDict[key]) # pylint: disable = no-member
+                value.load_state_dict(stateDict[key])  # pylint: disable = no-member
             else:
                 self.__dict__[key] = stateDict[key]
 

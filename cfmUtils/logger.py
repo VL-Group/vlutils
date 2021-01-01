@@ -15,6 +15,7 @@ import yaml
 from .base import DecoratorContextManager
 from .io import rotateItems
 
+
 __all__ = [
     "WaitingBar",
     "LoggingDisabler",
@@ -109,6 +110,7 @@ class _DeprecationFilter:
         if "depreca" in record.msg:
             return 0
         return 1
+
 
 def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
     """Logger configuration.

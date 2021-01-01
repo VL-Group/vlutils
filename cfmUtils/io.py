@@ -7,12 +7,14 @@ import atexit
 import time
 from subprocess import Popen, PIPE
 
+
 __all__ = [
     "openTensorboard",
     "deleteDir",
     "deleteFilesOlderThan",
     "rotateItems"
 ]
+
 
 def openTensorboard(log_dir: str, port: int):
     process = Popen(["tensorboard", "--logdir", log_dir, "--port", str(port)], stdout=PIPE, stderr=PIPE)
@@ -31,8 +33,10 @@ def openTensorboard(log_dir: str, port: int):
     atexit.register(cleanup)
     logging.info("Tensorboard opened at %d", port)
 
+
 def deleteDir(path):
     shutil.rmtree(path, ignore_errors=True)
+
 
 def deleteFilesOlderThan(folder: str, seconds: int):
     now = time.time()
@@ -40,6 +44,7 @@ def deleteFilesOlderThan(folder: str, seconds: int):
         if os.path.isfile(os.path.join(folder, f)):
             if os.stat(os.path.join(folder, f)).st_mtime < now - seconds:
                 os.remove(os.path.join(folder, f))
+
 
 def rotateItems(folder: str, count: int):
     """Rotate items in a directory (Old item will be delete until total-amount < desired).

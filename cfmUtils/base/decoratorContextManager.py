@@ -6,9 +6,11 @@ import inspect
 import functools
 import abc
 
+
 __all__ = [
     "DecoratorContextManager"
 ]
+
 
 class DecoratorContextManager(abc.ABC):
     """Allow a context manager to be used as a decorator

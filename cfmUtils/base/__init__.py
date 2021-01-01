@@ -11,6 +11,15 @@ Exports:
 """
 from .dataParallel import DataParallel, parallelFunction
 from .decoratorContextManager import DecoratorContextManager
-from .factory import Factory
+from .registrar import Registrar
 from .restorable import Restorable, Dictable
 from .module import Module
+
+
+__all__ = ["DataParallel",
+           "parallelFunction",
+           "Registrar",
+           "Restorable",
+           "Dictable",
+           "Module",
+           "DecoratorContextManager"]

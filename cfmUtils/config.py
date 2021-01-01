@@ -11,15 +11,18 @@ import yaml
 
 T = TypeVar("T")
 
+
 __all__ = [
     "read",
     "serialize"
 ]
 
+
 def _preprocess(plainStr: str, **varsToReplace):
     for key, value in varsToReplace.items():
         plainStr = plainStr.replace("{{{0}}}".format(key), str(value))
     return plainStr
+
 
 def _replaceKeyword(parsedYaml: dict) -> dict:
     if not isinstance(parsedYaml, dict):
@@ -31,9 +34,11 @@ def _replaceKeyword(parsedYaml: dict) -> dict:
         newDict[key] = _replaceKeyword(value)
     return newDict
 
+
 def _assert(name, instance, types):
     if not isinstance(instance, types):
         raise TypeError(f"{name} in yaml not match the type definition in {name} ({types}), got {type(instance)}.")
+
 
 def _serialize(instance: Any) -> dict:
     if isinstance(instance, (str, int, bool, float)):
@@ -43,6 +48,7 @@ def _serialize(instance: Any) -> dict:
     if isinstance(instance, dict):
         return {k: _serialize(v) for k, v in instance.items()}
     return {k: _serialize(v) for k, v in instance.__dict__}
+
 
 def _deserialize(parsedYaml: Union[dict, str, int, bool, float, list, set, tuple], classDef: Type[T], logger: Logger) -> T:
     if classDef in (str, int, bool, float):
@@ -87,6 +93,7 @@ def _deserialize(parsedYaml: Union[dict, str, int, bool, float, list, set, tuple
                 raise TypeError(f"Unrecognized type {fieldDef.type} of {attr} in {fieldDef}.")
     return classDef(**updateDict)
 
+
 def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logger: Logger = None) -> T:
     """Read from config.yaml
 
@@ -103,6 +110,7 @@ def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logg
     result.summary = lambda: serialize(result, logger)
     return result
 
+
 def serialize(instance: Any, logger: Logger = None) -> dict:
     """Serialize any object to dict-like
 
@@ -117,6 +125,7 @@ def serialize(instance: Any, logger: Logger = None) -> dict:
         return asdict(instance)
     (logger or logging).debug("Instance is not a dataclass, use custom serialize method.")
     return _serialize(instance)
+
 
 def summary(instance) -> str:
     """Serialize any object to yaml format summary

@@ -1,7 +1,10 @@
 """Module for custom nn.Module"""
-from typing import Any
+from typing import Any, Union
+from abc import abstractmethod
 
+import torch
 from torch import nn
+
 
 __all__ = [
     "Module"
@@ -57,7 +60,11 @@ class Module(nn.Module):
             if hasattr(method, "_cfmUtilsModuleMappedFunction"):
                 self._functions[method._cfmUtilsModuleMappedFunction] = method
 
-    def forward(self, key: str, *args, **kwargs) -> Any:
+    @abstractmethod
+    def _forward(self, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError
+
+    def forward(self, key: Union[torch.Tensor, str], *args: Any, **kwargs: Any) -> Any:
         """Custom forward function
 
         Args:
@@ -66,4 +73,7 @@ class Module(nn.Module):
         Returns:
             Any: Result.
         """
+        if not isinstance(key, str):
+            args = (key, ) + args
+            return self._forward(*args, **kwargs)
         return self._functions[key](*args, **kwargs)
