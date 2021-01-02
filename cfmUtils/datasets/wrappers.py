@@ -31,12 +31,22 @@ class Enumerate(Dataset):
     Args:
         data (Dataset): Any datasets.
     """
-    def __init__(self, data: Dataset):
+    def __init__(self, data: Dataset, mode: str = "asis"):
         assert len(data) > 0
         self.data = data
+        self._idxMapping = {
+            "asis": self._asIs,
+            "absolute": self._absolute
+        }[mode]
+
+    def _asIs(self, idx):
+        return idx
+
+    def _absolute(self, idx):
+        return (idx + len(self)) % len(self)
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        return idx, self.data[idx]
+        return self._idxMapping(idx), self.data[idx]
