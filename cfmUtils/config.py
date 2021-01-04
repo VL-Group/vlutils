@@ -127,15 +127,43 @@ def serialize(instance: Any, logger: Logger = None) -> dict:
     return _serialize(instance)
 
 
-def summary(instance) -> str:
+def summary(instance, logger: Logger = None) -> str:
     """Serialize any object to yaml format summary
 
     Args:
         instance (Any): Any object.
 
     Returns:
-        dict: The serialized string.
+        str: The serialized string.
     """
     with StringIO() as stream:
         yaml.safe_dump(serialize(instance), stream, default_flow_style=False)
         return stream.getvalue()
+
+
+class Config:
+    @classmethod
+    def read(cls, configPath: str, varsToReplace: Dict[str, Any], logger: Logger = None):
+        return read(configPath, varsToReplace, type(cls), logger)
+
+    def serialize(self, logger: Logger = None):
+        """Serialize self to dict-like
+
+        Args:
+            logger (Logger, optional): Logger for logging. Defaults to None.
+
+        Returns:
+            dict: The serialized dict.
+        """
+        return serialize(self, logger)
+
+    def summary(self, logger: Logger = None):
+        """Serialize self to yaml format summary
+
+        Args:
+            logger (Logger, optional): Logger for logging. Defaults to None.
+
+        Returns:
+            str: The serialized string.
+        """
+        return self.serialize(logger)

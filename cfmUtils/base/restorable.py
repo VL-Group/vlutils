@@ -37,6 +37,7 @@ class Restorable(Dictable):
     Example:
     ```python
         class Foo(Restorable):
+            super().__init__()
             # all fields start with '_' will be stored in the state-dict.
             self._x = 3
 

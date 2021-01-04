@@ -44,7 +44,8 @@ class WaitingBar(DecoratorContextManager):
         ncols (int): Total columns of bar.
     """
     def __init__(self, msg: str, ncols: int = 10):
-        assert ncols > 8, f"ncols must greater than 8, got {ncols}"
+        if ncols <= 8:
+            raise ValueError("ncols must greater than 8, got %d", ncols)
         self._msg = msg
         self._ticker = None
         self._stillRunning = None
