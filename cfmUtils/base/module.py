@@ -1,6 +1,7 @@
 """Module for custom nn.Module"""
 from typing import Any, Union
 from abc import abstractmethod
+import types
 
 import torch
 from torch import nn
@@ -59,6 +60,12 @@ class Module(nn.Module):
                 method = method.fget
             if hasattr(method, "_cfmUtilsModuleMappedFunction"):
                 self._functions[method._cfmUtilsModuleMappedFunction] = method
+
+    def _replicate_for_data_parallel(self):
+        replica = super()._replicate_for_data_parallel()
+        # Redirect mapped function to new replica.
+        replica._functions = {k: types.MethodType(v.__func__, replica) for k, v in replica._functions.items()}
+        return replica
 
     @abstractmethod
     def _forward(self, *args: Any, **kwargs: Any) -> Any:
