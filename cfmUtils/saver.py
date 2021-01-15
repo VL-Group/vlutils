@@ -43,13 +43,16 @@ class Saver(SummaryWriter):
     """
     NewestDir = "latest"
 
-    def __init__(self, saveDir: str, config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
+    def __init__(self, saveDir: str, saveName: str = "saved.ckpt", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None, logger: Logger = None):
+        logger = logger or logging
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
         if autoManage:
             if os.path.exists(os.path.join(saveDir, self.NewestDir)) and not reserve:
-                shutil.move(os.path.join(saveDir, self.NewestDir), os.path.join(saveDir, datetime.datetime.now().strftime(r"%y%m%d-%H%M%S")))
+                newDir = os.path.join(saveDir, datetime.datetime.now().strftime(r"%y%m%d-%H%M%S"))
+                shutil.move(os.path.join(saveDir, self.NewestDir), newDir)
+                logger.debug("Auto rename %s to %s", os.path.join(saveDir, self.NewestDir), newDir)
             os.makedirs(os.path.join(saveDir, self.NewestDir), exist_ok=True)
             if maxItems > 0:
                 rotateItems(saveDir, maxItems)
@@ -57,7 +60,8 @@ class Saver(SummaryWriter):
         else:
             self._saveDir = saveDir
         super().__init__(self._saveDir)
-        self._savePath = os.path.join(self._saveDir, self.NewestDir)
+        self._savePath = os.path.join(self._saveDir, saveName)
+        logger.debug("Saver located at %s", self._saveDir)
         if config is not None:
             with open(os.path.join(self._saveDir, "config.yaml"), "w") as fp:
                 yaml.dump(serialize(config), fp)
