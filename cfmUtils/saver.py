@@ -120,5 +120,8 @@ class Saver(SummaryWriter):
             elif callable(getattr(value, "load_state_dict", None)):
                 value.load_state_dict(stateDict)
             else:
-                value.data = stateDict
+                if isinstance(value, torch.Tensor):
+                    value.data = stateDict
+                else:
+                    objs[key] = stateDict
         return objs
