@@ -6,6 +6,7 @@ from typing import Any, Dict, Type, TypeVar, get_origin, get_args, _SpecialForm,
 from dataclasses import Field, is_dataclass, asdict
 import keyword
 from io import StringIO
+import types
 
 import yaml
 
@@ -107,7 +108,8 @@ def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logg
     if isinstance(varsToReplace, dict):
         plainYaml = _preprocess(plainYaml, **varsToReplace)
     result = _deserialize(_replaceKeyword(yaml.full_load(plainYaml)), classDef, logger or logging)
-    result.summary = lambda: serialize(result, logger)
+
+    # result.summary = types.MethodType(serialize, result)
     return result
 
 
