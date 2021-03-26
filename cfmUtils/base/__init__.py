@@ -14,6 +14,7 @@ from .decoratorContextManager import DecoratorContextManager
 from .registrar import Registrar
 from .restorable import Restorable, Dictable
 from .module import Module
+from .freqHook import FrequecyHook
 
 
 __all__ = ["DataParallel",
