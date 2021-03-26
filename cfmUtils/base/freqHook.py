@@ -37,6 +37,8 @@ class FrequecyHook():
         self._hooks = freqAndHooks
 
     def __call__(self, step, *args, **kwArgs):
+        results = dict()
         for key, value in self._hooks.items():
             if step % key == 0:
-                value(*args, **kwArgs)
+                results[key] = value(*args, **kwArgs)
+        return results
