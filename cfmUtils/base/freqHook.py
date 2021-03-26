@@ -33,10 +33,10 @@ class TransformedDict(MutableMapping):
 
 
 class FrequecyHook():
-    def __init__(self, base: int, freqAndHooks: dict):
-        self._hooks = TransformedDict(base, freqAndHooks)
+    def __init__(self, freqAndHooks: dict):
+        self._hooks = freqAndHooks
 
     def __call__(self, step, *args, **kwArgs):
-        hook = self._hooks.get(step, None)
-        if hook is not None:
-            return hook(*args, **kwArgs)
+        for key, value in self._hooks.items():
+            if step % key == 0:
+                value(*args, **kwArgs)
