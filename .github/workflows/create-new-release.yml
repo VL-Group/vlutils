@@ -31,7 +31,7 @@ jobs:
           python-version: 3.7
       - uses: actions/checkout@master
       - name: Update version
-        run: echo ${{ github.event.inputs.release-tag }} > '.github/workflows/VERSION'
+        run: echo ${{ github.event.inputs.release-tag }} > 'VERSION'
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
         with:
@@ -41,7 +41,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PUSH_TO_RELEASE }}
           branch: r${{ github.event.inputs.release-tag }}
       - name: Go ahead to next release
         run: python ".github/workflows/increVersion.py"
@@ -54,7 +54,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PUSH_TO_RELEASE }}
           branch: main
   test-n-build-publish:
     needs: [check-version-and-create-branch]
@@ -73,11 +73,10 @@ jobs:
         run: echo "Test"
       - name: Make, build, package
         run: make all ARGS="--branch r${{ github.event.inputs.release-tag }}"
-      - name: Publish distribution 📦 to Test PyPI
+      - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -87,4 +86,4 @@ jobs:
           tag_name: r${{ github.event.inputs.release-tag }}
           name: Release ${{ github.event.inputs.release-tag }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PUSH_TO_RELEASE }}

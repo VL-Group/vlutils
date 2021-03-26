@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 branch: str = args.branch.split("/")[-1]
 
-with open(".github/workflows/VERSION", "r") as fp:
+with open("VERSION", "r") as fp:
     verions = fp.read()
 
 # check correct format
@@ -23,10 +23,10 @@ if branch == "main":
     version = ".".join([str(major), str(minor), str(micro)]) + "dev{0}".format(datetime.datetime.today().strftime(r"%y%m%d"))
 elif branch.startswith("r"):
     version = branch[1:]
-    with open(".github/workflows/VERSION", "w") as fp:
+    with open("VERSION", "w") as fp:
         fp.write(version)
     print(f"Bump version to {version}")
-with open(".github/workflows/BUILD", "w") as fp:
+with open("BUILD", "w") as fp:
     fp.write(version)
 
 print(f"Change build to {version}")

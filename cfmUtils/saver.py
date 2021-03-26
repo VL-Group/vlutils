@@ -43,6 +43,16 @@ class Saver(SummaryWriter):
     """
     NewestDir = "latest"
 
+    @staticmethod
+    def composePath(saveDir: str, saveName: str = "saved.ckpt", autoManage: bool = True, reserve: bool = False):
+        if saveDir.endswith(Saver.NewestDir):
+            autoManage = False
+        if autoManage:
+            _saveDir = os.path.join(saveDir, Saver.NewestDir)
+        else:
+            _saveDir = saveDir
+        return os.path.join(_saveDir, saveName)
+
     def __init__(self, saveDir: str, saveName: str = "saved.ckpt", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None, logger: Logger = None):
         logger = logger or logging
         if saveDir.endswith(self.NewestDir):
@@ -100,7 +110,7 @@ class Saver(SummaryWriter):
         (logger or logging).debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: str, mapLocation, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
@@ -110,7 +120,7 @@ class Saver(SummaryWriter):
         Returns:
             Dict[str, Any]: The loaded dict.
         """
-        savedDict = torch.load(filePath)
+        savedDict = torch.load(filePath, map_location=mapLocation)
         logger = logger or logging
         logger.debug("Load state_dict with keys:\r\n%s", savedDict.keys())
         for key, value in objs.items():
