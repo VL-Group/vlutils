@@ -43,19 +43,6 @@ jobs:
         with:
           github_token: ${{ secrets.PUSH_TO_RELEASE }}
           branch: r${{ github.event.inputs.release-tag }}
-      - name: Go ahead to next release
-        run: python ".github/workflows/increVersion.py"
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v4
-        with:
-          author_name: Xiaosu Zhu
-          author_email: xiaosu.zhu@outlook.com
-          message: "Increment version ${{ github.event.inputs.release-tag }} + 0.0.1"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TO_RELEASE }}
-          branch: main
   test-n-build-publish:
     needs: [check-version-and-create-branch]
     # The type of runner that the job will run on
