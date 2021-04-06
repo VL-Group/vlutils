@@ -3,7 +3,7 @@
 clean:
 	rm -rf cfmUtils/BUILD
 
-build: update
+build:
 	@echo "Install tools"
 	python -m pip install setuptools wheel --user
 	@echo "Packaging tarball and whl"
