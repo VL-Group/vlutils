@@ -1,11 +1,7 @@
-.PHONY: clean update build
+.PHONY: clean build
 
 clean:
 	rm -rf cfmUtils/BUILD
-
-update:
-	@echo "Check build version by branch"
-	python ".github/workflows/updateVersion.py" $(ARGS)
 
 build: update
 	@echo "Install tools"
@@ -13,4 +9,4 @@ build: update
 	@echo "Packaging tarball and whl"
 	python setup.py sdist bdist_wheel
 
-all: update build clean
+all: build clean
