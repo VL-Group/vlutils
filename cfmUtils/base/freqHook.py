@@ -35,7 +35,7 @@ class FrequecyHook():
     Args:
         freqAndHooks (Dict[int, Callable]): The function (`value`) to call every `key` steps.
     """
-    def __init__(self, freqAndHooks: dict):
+    def __init__(self, freqAndHooks: Dict[int, Callable]):
         self._hooks = freqAndHooks
 
     def __call__(self, step: int, *args: Any, **kwArgs: Any) -> Dict[int, Any]:
