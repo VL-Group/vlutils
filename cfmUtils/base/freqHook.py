@@ -1,42 +1,52 @@
-from collections.abc import MutableMapping
-import math
+from typing import Dict, Callable, Any
 
 
-class TransformedDict(MutableMapping):
-    """A dictionary that applies an arbitrary key-altering
-       function before accessing the keys"""
-
-    def __init__(self, freq, inDict):
-        self.store = inDict.copy()
-        self._freq = freq
-
-    def __getitem__(self, key):
-        return self.store[self._keytransform(key)]
-
-    def __setitem__(self, key, value):
-        self.store[self._keytransform(key)] = value
-
-    def __delitem__(self, key):
-        del self.store[self._keytransform(key)]
-
-    def __iter__(self):
-        return iter(self.store)
-
-    def __len__(self):
-        return len(self.store)
-
-    def _keytransform(self, key):
-        result = math.log(key) / math.log(self._freq)
-        if result.is_integer():
-            result = int(result)
-        return result
+__all__ = [
+    "FrequecyHook"
+]
 
 
 class FrequecyHook():
+    """A hook to call function by frequency
+
+    Example:
+    ```python
+        def foo(*, bar, **_):
+            print(bar)
+
+        def lorem(*, ipsum, **_):
+            print(ipsum)
+
+        hook = FrequecyHook({
+            2: foo,
+            6: lorem
+        })
+
+        for i in range(1, 10):
+            hook(i, bar=f"Hello bar{i}.", ipsum=f"Hello ipsum{i}.")
+
+    >>> Hello bar2.
+    Hello bar4.
+    Hello bar6.
+    Hello ipsum6.
+    Hello bar8.
+    ```
+
+    Args:
+        freqAndHooks (Dict[int, Callable]): The function (`value`) to call every `key` steps.
+    """
     def __init__(self, freqAndHooks: dict):
         self._hooks = freqAndHooks
 
-    def __call__(self, step, *args, **kwArgs):
+    def __call__(self, step: int, *args: Any, **kwArgs: Any) -> Dict[int, Any]:
+        """Check whether the step % key == 0, if True, call value by args and kwArgs.
+
+        Args:
+            step (int): Current step.
+
+        Returns:
+            Dict[int, Any]: if the function is called, add its key and return value into this dict.
+        """
         results = dict()
         for key, value in self._hooks.items():
             if step % key == 0:

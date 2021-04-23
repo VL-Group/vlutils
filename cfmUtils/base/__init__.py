@@ -23,4 +23,5 @@ __all__ = ["DataParallel",
            "Restorable",
            "Dictable",
            "Module",
-           "DecoratorContextManager"]
+           "DecoratorContextManager",
+           "FrequecyHook"]

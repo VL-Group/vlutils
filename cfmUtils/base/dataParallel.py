@@ -32,7 +32,7 @@ def _get_a_var(obj):
 
 
 def _parallel_apply(modules, funcName: str, inputs, kwargs_tup=None, devices=None):
-    r"""Applies each `module` in :attr:`modules` in parallel on arguments
+    """Applies each `module` in :attr:`modules` in parallel on arguments
     contained in :attr:`inputs` (positional) and :attr:`kwargs_tup` (keyword)
     on each of :attr:`devices`.
 
