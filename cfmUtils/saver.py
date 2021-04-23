@@ -5,6 +5,7 @@ import logging
 import shutil
 import datetime
 from logging import Logger
+from pathlib import Path
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -44,7 +45,7 @@ class Saver(SummaryWriter):
     NewestDir = "latest"
 
     @staticmethod
-    def composePath(saveDir: str, saveName: str = "saved.ckpt", autoManage: bool = True, reserve: bool = False):
+    def composePath(saveDir: str, saveName: str = "saved.ckpt", autoManage: bool = True):
         if saveDir.endswith(Saver.NewestDir):
             autoManage = False
         if autoManage:
@@ -82,14 +83,27 @@ class Saver(SummaryWriter):
         shutil.copytree(path, os.path.join(self._saveDir, "dump"), symlinks=True, ignore=lambda src, path: [x for x in path if x == "__pycache__"], ignore_dangling_symlinks=True)
 
     @property
-    def SaveDir(self) -> str:
+    def SaveDir(self) -> Path:
         """Return the current saving directory path"""
-        return self._saveDir
+        return Path(self._saveDir)
 
     @property
-    def SavePath(self) -> str:
+    def SavePath(self) -> Path:
         """Return the current saving ckpt absolute path"""
-        return self._savePath
+        return Path(self._savePath)
+
+    def moveTo(self, dest: str):
+        """Move current saving dir to dest
+
+        Args:
+            dest (str): The path of destination dir, execute by shutil.move().
+        """
+        self.flush()
+        self.close()
+        shutil.move(self._saveDir, dest)
+        self._saveDir = dest
+        self._savePath = os.path.join(dest, self.SavePath.name)
+        self.log_dir = self._saveDir
 
     def save(self, logger: Logger = None, **objs: Any):
         """Save anything
@@ -110,10 +124,12 @@ class Saver(SummaryWriter):
         (logger or logging).debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: str, mapLocation, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: str, mapLocation: Dict[str, str] = None, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
+            filePath (str): The destination path to load ckpt.
+            mapLocation (Dict[str, str], optional): See torch.load(mapLocation). Defaults to None.
             logger (Logger, optional): For logging. Defaults to None.
             **objs (Any): Anything to load by name. If it has `.load_state_dict()`, use this method. Else the loaded item will be placed in resulting dict.
 
