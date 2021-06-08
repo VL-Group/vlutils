@@ -114,8 +114,8 @@ class Saver(SummaryWriter):
         """
         saveDict = dict()
         for key, value in objs.items():
-            if isinstance(value, torch.nn.DataParallel):
-                saveDict[key] = value.module.state_dict()
+            if isinstance(value, torch.nn.Module):
+                saveDict[key] = value.state_dict()
             elif hasattr(value, "state_dict"):
                 saveDict[key] = value.state_dict()
             else:
@@ -124,12 +124,13 @@ class Saver(SummaryWriter):
         (logger or logging).debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: str, mapLocation: Dict[str, str] = None, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: str, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
             filePath (str): The destination path to load ckpt.
             mapLocation (Dict[str, str], optional): See torch.load(mapLocation). Defaults to None.
+            strict (bool, optional): See torch.load_state_dict(strict). Defaults to True.
             logger (Logger, optional): For logging. Defaults to None.
             **objs (Any): Anything to load by name. If it has `.load_state_dict()`, use this method. Else the loaded item will be placed in resulting dict.
 
@@ -141,8 +142,8 @@ class Saver(SummaryWriter):
         logger.debug("Load state_dict with keys:\r\n%s", savedDict.keys())
         for key, value in objs.items():
             stateDict = savedDict[key]
-            if isinstance(value, torch.nn.DataParallel):
-                value.module.load_state_dict(stateDict)
+            if isinstance(value, torch.nn.Module):
+                value.load_state_dict(stateDict, strict=strict)
             elif callable(getattr(value, "load_state_dict", None)):
                 value.load_state_dict(stateDict)
             else:
