@@ -3,7 +3,7 @@ import torch
 # import pytest
 from skimage.color import rgb2hsv as sk_rgb2hsv, hsv2rgb as sk_hsv2rgb
 
-from cfmUtils.vision.colorSpace import rgb2hsv, hsv2rgb
+from vlutils.vision.colorSpace import rgb2hsv, hsv2rgb
 
 
 class TestDataset:

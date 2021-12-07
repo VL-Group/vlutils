@@ -1,7 +1,7 @@
 .PHONY: clean build
 
 clean:
-	rm -rf cfmUtils/BUILD
+	rm -rf vlutils/BUILD
 
 build:
 	@echo "Install tools"

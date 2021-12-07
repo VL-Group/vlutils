@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from cfmUtils.datasets import Zip, Enumerate
+from vlutils.datasets import Zip, Enumerate
 
 
 class TestDataset:

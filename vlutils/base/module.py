@@ -45,9 +45,9 @@ class Module(nn.Module):
         """
         def _wrapped(fn: Any):
             if isinstance(fn, property):
-                fn.fget._cfmUtilsModuleMappedFunction = key
+                fn.fget._vlutilsModuleMappedFunction = key
             else:
-                fn._cfmUtilsModuleMappedFunction = key
+                fn._vlutilsModuleMappedFunction = key
             return fn
         return _wrapped
 
@@ -58,8 +58,8 @@ class Module(nn.Module):
             method = getattr(self, methodname)
             if isinstance(method, property):
                 method = method.fget
-            if hasattr(method, "_cfmUtilsModuleMappedFunction"):
-                self._functions[method._cfmUtilsModuleMappedFunction] = method
+            if hasattr(method, "_vlutilsModuleMappedFunction"):
+                self._functions[method._vlutilsModuleMappedFunction] = method
 
     def _replicate_for_data_parallel(self):
         replica = super()._replicate_for_data_parallel()

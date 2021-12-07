@@ -3,8 +3,8 @@ import pytest
 from torch import nn
 import torch
 
-from cfmUtils.base import DataParallel, Module, Registrar, Restorable
-from cfmUtils.metrics.helpers import recursiveCompare
+from vlutils.base import DataParallel, Module, Registrar, Restorable
+from vlutils.metrics.helpers import recursiveCompare
 
 
 def _initToOnes(m: nn.Module):
