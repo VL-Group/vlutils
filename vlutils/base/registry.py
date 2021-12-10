@@ -1,6 +1,6 @@
 """Module of Registry."""
 from typing import Any, Union
-from vlutils.logger import pPrint
+from vlutils.utils import pPrint
 
 
 __all__ = [
