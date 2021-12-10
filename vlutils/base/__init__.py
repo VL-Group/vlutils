@@ -11,7 +11,7 @@ Exports:
 """
 from .dataParallel import DataParallel, parallelFunction
 from .decoratorContextManager import DecoratorContextManager
-from .registrar import Registrar
+from .registry import Registry
 from .restorable import Restorable, Dictable
 from .module import Module
 from .freqHook import FrequecyHook
@@ -19,7 +19,7 @@ from .freqHook import FrequecyHook
 
 __all__ = ["DataParallel",
            "parallelFunction",
-           "Registrar",
+           "Registry",
            "Restorable",
            "Dictable",
            "Module",

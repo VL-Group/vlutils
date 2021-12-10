@@ -1,24 +1,25 @@
-"""Module of Registrar."""
+"""Module of Registry."""
 from typing import Any, Union
+from vlutils.logger import pPrint
 
 
 __all__ = [
-    "Registrar"
+    "Registry"
 ]
 
 
-class _RegistrarMeta(type):
+class _registryMeta(type):
     def __getitem__(self, idx):
         return self._map[idx]
 
 
-class Registrar(metaclass=_RegistrarMeta):
-    """A registrar. Inherit from it to create a lots of factories.
+class Registry(metaclass=_registryMeta):
+    """A registry. Inherit from it to create a lots of factories.
 
     Example:
     ```python
         # Inherit to make a factory.
-        class Geometry(Registrar):
+        class Geometry(Registry):
             ...
 
         @Geometry.register("Foo")
@@ -35,7 +36,7 @@ class Registrar(metaclass=_RegistrarMeta):
 
     @classmethod
     def register(cls, key: Union[str, Any]):
-        """Decorator for register anything into registrar.
+        """Decorator for register anything into registry.
 
         Args:
             key (str): The key for registering an object.
@@ -51,9 +52,15 @@ class Registrar(metaclass=_RegistrarMeta):
 
     @classmethod
     def get(cls, key: str):
-        """Get an object from registrar.
+        """Get an object from registry.
 
         Args:
             key (str): The key for the registered object.
         """
         return cls._map[key]
+
+    @classmethod
+    def summary(cls) -> str:
+        return pPrint({
+            k: v.__module__ + v.__name__ for k, v in cls._map.items()
+        })
