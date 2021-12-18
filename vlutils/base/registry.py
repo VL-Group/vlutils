@@ -13,23 +13,7 @@ class _registryMeta(type):
         return self._map[idx]
 
 
-class Registry(metaclass=_registryMeta):
-    """A registry. Inherit from it to create a lots of factories.
-
-    Example:
-    ```python
-        # Inherit to make a factory.
-        class Geometry(Registry):
-            ...
-
-        @Geometry.register("Foo")
-        class Foo:
-            ...
-
-        instance = Geometry.get("Foo")()
-        assert isinstance(instance, Foo)
-    ```
-    """
+class _registry(metaclass=_registryMeta):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         cls._map = dict()
@@ -61,6 +45,34 @@ class Registry(metaclass=_registryMeta):
 
     @classmethod
     def summary(cls) -> str:
+        """Get registry summary.
+        """
         return pPrint({
             k: v.__module__ + v.__name__ for k, v in cls._map.items()
         })
+
+
+class Registry(_registry):
+    """A registry. Inherit from it to create a lots of factories.
+
+    Example:
+    ```python
+        # Inherit to make a factory.
+        class Geometry(Registry):
+            ...
+
+        # Register with auto-key "Foo"
+        @Geometry.register
+        class Foo:
+            ...
+
+        # Register with manual-key "Bar"
+        @Geometry.register("Bar")
+        class Bar:
+            ...
+
+        instance = Geometry.get("Foo")()
+        assert isinstance(instance, Foo)
+    ```
+    """
+    pass
