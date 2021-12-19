@@ -5,6 +5,8 @@ from io import StringIO
 
 def _alignYAML(str, pad=0, aligned_colons=False):
     props = re.findall(r'^\s*[\S]+:', str, re.MULTILINE)
+    if not props:
+        return str
     longest = max([len(i) for i in props]) + pad
     if aligned_colons:
         return ''.join([i+'\n' for i in map(
