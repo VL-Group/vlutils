@@ -1,5 +1,3 @@
-# CFM Utilities
+# Vision-Language Utilities
 
-A simple, personal-use tool for enhancing experience on writing deep learning codes.
-
-NOT COMPLETED.
+A tool for convenient pytorch-based deep learning.
