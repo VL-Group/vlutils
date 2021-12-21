@@ -38,6 +38,15 @@ class FrequecyHook():
     def __init__(self, freqAndHooks: Dict[int, Callable]):
         self._hooks = freqAndHooks
 
+    def extend(self, freqAndHooks: Dict[int, Callable]):
+        self._hooks.update(freqAndHooks)
+
+    def append(self, freq: int, hook: Callable):
+        self._hooks[freq] = hook
+
+    def remove(self, freq: int):
+        self._hooks.pop(freq)
+
     def __call__(self, step: int, *args: Any, **kwArgs: Any) -> Dict[int, Any]:
         """Check whether the step % key == 0, if True, call value by args and kwArgs.
 
