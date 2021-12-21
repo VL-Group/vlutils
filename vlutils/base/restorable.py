@@ -72,5 +72,6 @@ class Restorable(Dictable):
 
     def __setattr__(self, name: str, value: Any):
         self.__dict__[name] = value
-        if name.startswith("_"):
-            self.valuesToSave.add(name)
+        if hasattr(self, "valuesToSave"):
+            if name.startswith("_"):
+                self.valuesToSave.add(name)
