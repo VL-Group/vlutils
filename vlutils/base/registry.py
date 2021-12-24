@@ -1,7 +1,9 @@
 """Module of Registry."""
-from typing import Any, Union
+from typing import Dict, Union, Generic, TypeVar
 from vlutils.utils import pPrint
 
+
+T = TypeVar("T")
 
 __all__ = [
     "Registry"
@@ -16,17 +18,17 @@ class _registryMeta(type):
 class _registry(metaclass=_registryMeta):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls._map = dict()
+        cls._map: Dict[str, T] = dict()
 
     @classmethod
-    def register(cls, key: Union[str, Any]):
+    def register(cls, key: Union[str, T]):
         """Decorator for register anything into registry.
 
         Args:
             key (str): The key for registering an object.
         """
         if isinstance(key, str):
-            def insert(value: Any):
+            def insert(value: T):
                 cls._map[key] = value
                 return value
             return insert
@@ -35,7 +37,7 @@ class _registry(metaclass=_registryMeta):
             return key
 
     @classmethod
-    def get(cls, key: str):
+    def get(cls, key: str) -> T:
         """Get an object from registry.
 
         Args:
@@ -73,6 +75,9 @@ class Registry(_registry):
 
         instance = Geometry.get("Foo")()
         assert isinstance(instance, Foo)
+
+        instance = Geometry["Bar"]()
+        assert isinstance(instance, Bar)
     ```
     """
     pass

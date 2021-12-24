@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Any
+from typing import Dict, Callable, Any, Tuple
 
 
 __all__ = [
@@ -35,14 +35,23 @@ class FrequecyHook():
     Args:
         freqAndHooks (Dict[int, Callable]): The function (`value`) to call every `key` steps.
     """
-    def __init__(self, freqAndHooks: Dict[int, Callable]):
-        self._hooks = freqAndHooks
+    def __init__(self, *freqAndHooks: Tuple[int, Callable]):
+        self._hooks = dict()
+        for key, value in freqAndHooks:
+            if key not in self._hooks:
+                self._hooks[key] = list()
+            self._hooks[key].append(value)
 
-    def extend(self, freqAndHooks: Dict[int, Callable]):
-        self._hooks.update(freqAndHooks)
+    def extend(self, *freqAndHooks: Tuple[int, Callable]):
+        for key, value in freqAndHooks:
+            if key not in self._hooks:
+                self._hooks[key] = list()
+            self._hooks[key].append(value)
 
     def append(self, freq: int, hook: Callable):
-        self._hooks[freq] = hook
+        if freq not in self._hooks:
+            self._hooks[freq] = list()
+        self._hooks[freq].append(hook)
 
     def remove(self, freq: int):
         self._hooks.pop(freq)
@@ -59,5 +68,7 @@ class FrequecyHook():
         results = dict()
         for key, value in self._hooks.items():
             if step % key == 0:
-                results[key] = value(*args, **kwArgs)
+                results[key] = list()
+                for fn in value:
+                    results[key].append(fn(step, *args, **kwArgs))
         return results

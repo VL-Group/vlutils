@@ -4,7 +4,6 @@ import os
 import logging
 import shutil
 import datetime
-from logging import Logger
 from pathlib import Path
 
 import torch
@@ -13,6 +12,7 @@ import yaml
 
 from .io import rotateItems
 from .config import serialize
+from .logger import configLogging
 
 
 __all__ = [
@@ -54,8 +54,7 @@ class Saver(SummaryWriter):
             _saveDir = saveDir
         return os.path.join(_saveDir, saveName)
 
-    def __init__(self, saveDir: str, saveName: str = "saved.ckpt", logger: Logger = None, config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
-        self.setLogger(logger)
+    def __init__(self, saveDir: str, saveName: str = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -63,7 +62,7 @@ class Saver(SummaryWriter):
             if os.path.exists(os.path.join(saveDir, self.NewestDir)) and not reserve:
                 newDir = os.path.join(saveDir, datetime.datetime.now().strftime(r"%y%m%d-%H%M%S"))
                 shutil.move(os.path.join(saveDir, self.NewestDir), newDir)
-                self.debug("Auto rename %s to %s", os.path.join(saveDir, self.NewestDir), newDir)
+                # self.debug("Auto rename %s to %s", os.path.join(saveDir, self.NewestDir), newDir)
             os.makedirs(os.path.join(saveDir, self.NewestDir), exist_ok=True)
             if maxItems > 0:
                 rotateItems(saveDir, maxItems)
@@ -71,8 +70,14 @@ class Saver(SummaryWriter):
         else:
             self._saveDir = saveDir
         super().__init__(self._saveDir)
+
+        logger = configLogging(self.SaveDir, "root", loggingLevel, rotateLogs=-1)
+        self.Logger = logger
+
         self._savePath = os.path.join(self._saveDir, saveName)
         self.debug("Saver located at %s", self._saveDir)
+
+
         if config is not None:
             with open(os.path.join(self._saveDir, "config.yaml"), "w") as fp:
                 yaml.dump(serialize(config), fp)
@@ -83,8 +88,8 @@ class Saver(SummaryWriter):
     def Logger(self) -> logging.Logger:
         return self._logger
 
-    @Saver.Logger
-    def setLogger(self, logger: logging.Logger):
+    @Logger.setter
+    def Logger(self, logger: logging.Logger):
         logger = logger or logging
         self._logger = logger
 
