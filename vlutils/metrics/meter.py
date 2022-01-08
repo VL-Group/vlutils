@@ -10,8 +10,8 @@ class Handler(abc.ABC):
         super().__init__()
         self._format = format
 
-    def to(self, device):
-        pass
+    def to(self, device: Any) -> "Handler":
+        return self
 
     @property
     def Length(self) -> int:
