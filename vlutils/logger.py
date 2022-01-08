@@ -16,8 +16,35 @@ from .io import rotateItems
 __all__ = [
     "WaitingBar",
     "LoggingDisabler",
-    "configLogging"
+    "configLogging",
+    "readableSize"
 ]
+
+
+def readableSize(byteSize: int, floating: int = 2, binary: bool = True) -> str:
+    """Convert bytes to human-readable string (like `-h` option in POSIX).
+
+    Args:
+        size (int): Total bytes.
+        floating (int, optional): Floating point length. Defaults to 2.
+        binary (bool, optional): Format as XB or XiB. Defaults to True.
+
+    Returns:
+        str: Human-readable string of size.
+    """
+    size = float(byteSize)
+    unit = "B"
+    if binary:
+        for unit in ["B", "kiB", "MiB", "GiB", "TiB", "PiB"]:
+            if size < 1024.0 or unit == "PiB":
+                break
+            size /= 1024.0
+        return f"{size:.{floating}f}{unit}"
+    for unit in ["B", "kB", "MB", "GB", "TB", "PB"]:
+        if size < 1000.0 or unit == "PB":
+            break
+        size /= 1000.0
+    return f"{size:.{floating}f}{unit}"
 
 
 class WaitingBar(DecoratorContextManager):
