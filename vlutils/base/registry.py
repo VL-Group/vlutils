@@ -21,7 +21,7 @@ class _registry(metaclass=_registryMeta):
         cls._map: Dict[str, T] = dict()
 
     @classmethod
-    def register(cls, key: Union[str, T]):
+    def register(cls, key: Union[str, T]) -> T:
         """Decorator for register anything into registry.
 
         Args:
