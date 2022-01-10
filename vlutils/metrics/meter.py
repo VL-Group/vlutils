@@ -21,13 +21,9 @@ class Handler(abc.ABC):
     def Accumulated(self) -> float:
         return self.accumulated
 
-    @Length.setter
-    def Length(self, length: int):
-        self.length = length
-
-    @Accumulated.setter
-    def Accumulated(self, accumulated: float):
-        self.accumulated = accumulated
+    @property
+    def Result(self) -> float:
+        return self.accumulated / self.length
 
     def __call__(self, *args: Any, **kwds: Any):
         results = self.handle(*args, **kwds)
@@ -52,6 +48,13 @@ class Meters:
     def summary(self, reset: bool = False):
         return {
             handler.__class__.__name__: str(handler)
+                for handler
+                    in self._handlers
+        }
+
+    def results(self, reset: bool = False):
+        return {
+            handler.__class__.__name__: handler.Result
                 for handler
                     in self._handlers
         }
