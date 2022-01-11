@@ -7,6 +7,7 @@ import datetime
 from pathlib import Path
 
 import torch
+from tensorboard import program
 from torch.utils.tensorboard import SummaryWriter
 import yaml
 
@@ -55,7 +56,7 @@ class Saver(SummaryWriter):
             _saveDir = saveDir
         return os.path.join(_saveDir, saveName)
 
-    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None, activateTensorboard: bool = True):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -72,7 +73,7 @@ class Saver(SummaryWriter):
             self._saveDir = saveDir
         super().__init__(self._saveDir)
 
-        logger = configLogging(self.SaveDir, "root", loggingLevel, rotateLogs=-1)
+        logger = configLogging(self.SaveDir, loggerName, loggingLevel, rotateLogs=-1)
         self.Logger = logger
 
         self._savePath = os.path.join(self._saveDir, saveName)
@@ -86,6 +87,22 @@ class Saver(SummaryWriter):
             self._dumpFile(dumpFile)
 
         self._infoCounter = 0
+
+        if activateTensorboard:
+            tb = program.TensorBoard()
+            tb.configure(argv=[None, "--logdir", self._saveDir, "--load_fast", "false"])
+            url = tb.launch()
+            self.debug("Tensorboard is listening at %s", url)
+            self._url = url
+        else:
+            self._url = None
+
+    @property
+    def TensorboardURL(self) -> str:
+        if self._url is not None:
+            return self._url
+        else:
+            raise RuntimeError("No tensorboard listening.")
 
     @property
     def Logger(self) -> logging.Logger:
@@ -125,9 +142,9 @@ class Saver(SummaryWriter):
         self._logger.info(msg, *args, **kwargs)
 
     def countedInfo(self, msg, *args, **kwargs):
-        msg = "#%02d: " + msg
         self._infoCounter += 1
-        self._logger.info(msg, self._infoCounter, *args, **kwargs)
+        msg = f"#{self._infoCounter: 02d}: {msg}"
+        self._logger.info(msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         """
@@ -257,7 +274,7 @@ class Saver(SummaryWriter):
 
 
 class DummySaver(Saver):
-    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
         if autoManage:
