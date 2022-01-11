@@ -141,11 +141,6 @@ class Saver(SummaryWriter):
         """
         self._logger.info(msg, *args, **kwargs)
 
-    def countedInfo(self, msg, *args, **kwargs):
-        self._infoCounter += 1
-        msg = f"#{self._infoCounter: 02d}: {msg}"
-        self._logger.info(msg, *args, **kwargs)
-
     def warning(self, msg, *args, **kwargs):
         """
         Log 'msg % args' with severity 'WARNING'.
@@ -298,9 +293,6 @@ class DummySaver(Saver):
         pass
 
     def info(self, msg, *args, **kwargs):
-        pass
-
-    def countedInfo(self, msg, *args, **kwargs):
         pass
 
     def warning(self, msg, *args, **kwargs):

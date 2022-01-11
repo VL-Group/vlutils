@@ -6,8 +6,8 @@ from typing import Any, Dict, Type, TypeVar, get_origin, get_args, _SpecialForm,
 from dataclasses import Field, is_dataclass, asdict
 import keyword
 from io import StringIO
-import types
 
+from rich.syntax import Syntax
 import yaml
 
 T = TypeVar("T")
@@ -140,7 +140,7 @@ def summary(instance, logger: Logger = None) -> str:
     """
     with StringIO() as stream:
         yaml.safe_dump(serialize(instance), stream, default_flow_style=False)
-        return stream.getvalue()
+        return Syntax(stream.getvalue(), "yaml")
 
 
 class Config:
