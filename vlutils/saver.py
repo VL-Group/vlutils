@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict
+from typing import Any, Dict, Union
 import os
 import logging
 import shutil
@@ -14,6 +14,7 @@ from .io import rotateItems
 from .config import serialize
 from .logger import configLogging
 
+StrPath = Union[str, os.PathLike[str]]
 
 __all__ = [
     "Saver"
@@ -45,7 +46,7 @@ class Saver(SummaryWriter):
     NewestDir = "latest"
 
     @staticmethod
-    def composePath(saveDir: str, saveName: str = "saved.ckpt", autoManage: bool = True):
+    def composePath(saveDir: StrPath, saveName: StrPath = "saved.ckpt", autoManage: bool = True):
         if saveDir.endswith(Saver.NewestDir):
             autoManage = False
         if autoManage:
@@ -54,7 +55,7 @@ class Saver(SummaryWriter):
             _saveDir = saveDir
         return os.path.join(_saveDir, saveName)
 
-    def __init__(self, saveDir: str, saveName: str = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -83,6 +84,8 @@ class Saver(SummaryWriter):
                 yaml.dump(serialize(config), fp)
         if dumpFile is not None and not str.isspace(dumpFile) and os.path.exists(dumpFile):
             self._dumpFile(dumpFile)
+
+        self._infoCounter = 0
 
     @property
     def Logger(self) -> logging.Logger:
@@ -120,6 +123,11 @@ class Saver(SummaryWriter):
         logger.info("Houston, we have a %s", "interesting problem", exc_info=1)
         """
         self._logger.info(msg, *args, **kwargs)
+
+    def countedInfo(self, msg, *args, **kwargs):
+        msg = "#%02d: " + msg
+        self._infoCounter += 1
+        self._logger.info(msg, self._infoCounter, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         """
@@ -172,7 +180,7 @@ class Saver(SummaryWriter):
         self._logger.log(level, msg, *args, **kwargs)
 
 
-    def _dumpFile(self, path: str):
+    def _dumpFile(self, path: StrPath):
         shutil.copytree(path, os.path.join(self._saveDir, "dump"), symlinks=True, ignore=lambda src, path: [x for x in path if x == "__pycache__"], ignore_dangling_symlinks=True)
 
     @property
@@ -185,7 +193,7 @@ class Saver(SummaryWriter):
         """Return the current saving ckpt absolute path"""
         return Path(self._savePath)
 
-    def moveTo(self, dest: str):
+    def moveTo(self, dest: StrPath):
         """Move current saving dir to dest
 
         Args:
@@ -198,7 +206,7 @@ class Saver(SummaryWriter):
         self._savePath = os.path.join(dest, self.SavePath.name)
         self.log_dir = self._saveDir
 
-    def save(self, path: str = None, **objs: Any):
+    def save(self, path: StrPath = None, **objs: Any):
         """Save anything
 
         Args:
@@ -216,7 +224,7 @@ class Saver(SummaryWriter):
         self.debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: str, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
@@ -244,3 +252,64 @@ class Saver(SummaryWriter):
                 else:
                     objs[key] = stateDict
         return objs
+
+
+
+
+class DummySaver(Saver):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None):
+        if saveDir.endswith(self.NewestDir):
+            autoManage = False
+        if autoManage:
+            self._saveDir = os.path.join(saveDir, self.NewestDir)
+        else:
+            self._saveDir = saveDir
+        self._savePath = os.path.join(self._saveDir, saveName)
+
+    @property
+    def Logger(self) -> logging.Logger:
+        raise NotImplementedError("Dummy saver does not have logger.")
+
+    @Logger.setter
+    def Logger(self, logger: logging.Logger):
+        raise NotImplementedError("Dummy saver does not have logger.")
+
+    def setLevel(self, level):
+        pass
+
+    def debug(self, msg, *args, **kwargs):
+        pass
+
+    def info(self, msg, *args, **kwargs):
+        pass
+
+    def countedInfo(self, msg, *args, **kwargs):
+        pass
+
+    def warning(self, msg, *args, **kwargs):
+        pass
+
+    def error(self, msg, *args, **kwargs):
+        pass
+
+    def exception(self, msg, *args, exc_info=True, **kwargs):
+        pass
+
+    def critical(self, msg, *args, **kwargs):
+        pass
+
+    def log(self, level, msg, *args, **kwargs):
+        pass
+
+    def _dumpFile(self, path: StrPath):
+        pass
+
+    def moveTo(self, dest: StrPath):
+        raise NotImplementedError("Dummy saver does not implement `moveTo` function.")
+
+    def save(self, path: StrPath = None, **objs: Any):
+        raise NotImplementedError("Dummy saver does not implement `save` function.")
+
+    @staticmethod
+    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+        raise NotImplementedError("Dummy saver does not implement `load` function.")

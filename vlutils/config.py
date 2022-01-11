@@ -95,7 +95,7 @@ def _deserialize(parsedYaml: Union[dict, str, int, bool, float, list, set, tuple
     return classDef(**updateDict)
 
 
-def read(configPath: str, varsToReplace: Dict[str, Any], classDef: Type[T], logger: Logger = None) -> T:
+def read(configPath: str, varsToReplace: Union[Dict[str, Any], None], classDef: Type[T], logger: Logger = None) -> T:
     """Read from config.yaml
 
     Args:
