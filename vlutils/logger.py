@@ -176,10 +176,12 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, lo
         },
         "handlers": {
             "console": {
-                "class": "logging.StreamHandler",
+                "class": "rich.logging.RichHandler",
                 "level": level,
-                "formatter": "simple",
-                "stream": "ext://sys.stdout"
+                "markup": True,
+                "rich_tracebacks": True,
+                "tracebacks_show_locals": True,
+                "log_time_format": r"%m/%d %H:%M:%S"
             },
             "info_file": {
                 "class": "logging.FileHandler",
