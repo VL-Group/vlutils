@@ -162,11 +162,11 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, lo
         "version": 1,
         "formatters": {
             "full": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                "format": r"%(asctime)s - %(name)s - %(levelname)s - %(message)s"
             },
             "simple": {
-                "format": "%(asctime)s - %(message)s",
-                "datefmt": "%m/%d %H:%M:%S"
+                "format": r"%(asctime)s - %(message)s",
+                "datefmt": r"%m/%d %H:%M:%S"
             }
         },
         "filters": {
@@ -176,10 +176,12 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, lo
         },
         "handlers": {
             "console": {
-                "class": "logging.StreamHandler",
+                "class": "rich.logging.RichHandler",
                 "level": level,
-                "formatter": "simple",
-                "stream": "ext://sys.stdout"
+                "markup": True,
+                "rich_tracebacks": True,
+                "tracebacks_show_locals": True,
+                "log_time_format": r"%m/%d %H:%M"
             },
             "info_file": {
                 "class": "logging.FileHandler",
