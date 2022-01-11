@@ -140,7 +140,7 @@ def summary(instance, logger: Logger = None) -> str:
     """
     with StringIO() as stream:
         yaml.safe_dump(serialize(instance), stream, default_flow_style=False)
-        return Syntax(stream.getvalue(), "yaml")
+        return stream.getvalue()
 
 
 class Config:
