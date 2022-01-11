@@ -7,7 +7,6 @@ from dataclasses import Field, is_dataclass, asdict
 import keyword
 from io import StringIO
 
-from rich.syntax import Syntax
 import yaml
 
 T = TypeVar("T")
