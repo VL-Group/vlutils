@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Any, Tuple
+from typing import Dict, Callable, Any, List, Tuple, Union
 
 
 __all__ = [
@@ -6,7 +6,7 @@ __all__ = [
 ]
 
 
-class FrequecyHook():
+class FrequecyHook:
     """A hook to call function by frequency
 
     Example:
@@ -72,3 +72,12 @@ class FrequecyHook():
                 for fn in value:
                     results[key].append(fn(step, *args, **kwArgs))
         return results
+
+
+class ChainHook:
+    def __init__(self, *hooks: Union[Callable, None]) -> None:
+        self._hooks: List[Callable] = [h for h in hooks if h is not None]
+
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
+        for hook in self._hooks:
+            hook(*args, **kwds)
