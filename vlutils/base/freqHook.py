@@ -78,9 +78,6 @@ class FrequecyHook:
         pretty = { f"Every {key} times calls": [f"{fn.__module__}.{fn.__qualname__}" for fn in value] for key, value in self._hooks.items() }
         return pformat(pretty, indent=4)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
 
 class ChainHook:
     def __init__(self, *hooks: Union[Callable, None]) -> None:

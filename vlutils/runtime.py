@@ -1,6 +1,7 @@
 """Module of runtime utils"""
 import os
 import logging
+from pprint import pformat
 import time
 from typing import List, Dict, Tuple
 
@@ -109,17 +110,24 @@ def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1
             if g['memory.used'] < 64:
                 # give space for basic vram
                 gpuList.append((i, (g['memory.total'] - g['memory.used'] - 64)))
-                logger.debug("adding gpu[%d] with %f free.", i, g['memory.total'] - g['memory.used'])
+                logger.debug("adding gpu[%d] with %.2fMB free.", i, g['memory.total'] - g['memory.used'])
         elif g['memory.total'] - g['memory.used'] > needVRamEachGPU + 64:
             gpuList.append((i, (g['memory.total'] - g['memory.used'] - 64)))
-            logger.debug("adding gpu[%d] with %f bytes free.", i, g['memory.total'] - g['memory.used'])
+            logger.debug("adding gpu[%d] with %.2fMB free.", i, g['memory.total'] - g['memory.used'])
         if len(gpuList) >= needGPUs and not wantsMore:
             break
 
     if len(gpuList) >= needGPUs:
         # keep order
         gpuList = sorted(gpuList, key=lambda item: item[0])
-        logger.debug("Found %d %s satisfied", len(gpuList), "gpu" if len(gpuList) == 1 else "gpus")
+        logger.debug("Found %d %s satisfied with args %s.", len(gpuList), "gpu" if len(gpuList) == 1 else "gpus", pformat(
+            {
+                "wantsMore": wantsMore,
+                "givenList": givenList,
+                "needGPUs": needGPUs,
+                "needVRamEachGPU": needVRamEachGPU
+            }, indent=4
+        ))
         if writeOSEnv:
             os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(map(str, [item[0] for item in gpuList]))
             newGPUList = []
