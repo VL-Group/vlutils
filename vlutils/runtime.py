@@ -112,7 +112,7 @@ def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1
                 logger.debug("adding gpu[%d] with %f free.", i, g['memory.total'] - g['memory.used'])
         elif g['memory.total'] - g['memory.used'] > needVRamEachGPU + 64:
             gpuList.append((i, (g['memory.total'] - g['memory.used'] - 64)))
-            logger.debug("adding gpu[%d] with %f free.", i, g['memory.total'] - g['memory.used'])
+            logger.debug("adding gpu[%d] with %f bytes free.", i, g['memory.total'] - g['memory.used'])
         if len(gpuList) >= needGPUs and not wantsMore:
             break
 

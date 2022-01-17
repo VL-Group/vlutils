@@ -77,7 +77,7 @@ class Saver(SummaryWriter):
         self.Logger = logger
 
         self._savePath = os.path.join(self._saveDir, saveName)
-        self.debug("Saver located at %s", self._saveDir)
+        self.debug("Saver located at %s", os.path.relpath(self._saveDir))
 
 
         if config is not None:
