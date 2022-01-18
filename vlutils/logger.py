@@ -1,4 +1,6 @@
 """Module of logging"""
+from typing import TypeVar
+import functools
 import os
 import sys
 import warnings
@@ -8,6 +10,7 @@ from logging import LogRecord
 import datetime
 import multiprocessing
 import time
+import rich.logging
 
 from vlutils.base.decoratorContextManager import DecoratorContextManager
 from .io import rotateItems
@@ -19,6 +22,25 @@ __all__ = [
     "configLogging",
     "readableSize"
 ]
+
+T = TypeVar("T")
+
+def trackingFunctionCalls(function: T, logger=logging) -> T:
+    def wrapper(*args, **kwArgs):
+        if isinstance(function, functools.partial):
+            allArgs = function.args + args
+            # Python 3.9+
+            allkwArgs = function.keywords | kwArgs
+            func = function.func
+        else:
+            allArgs = args
+            allkwArgs = kwArgs
+            func = function
+        allArgs = ", ".join(str(arg) for arg in allArgs)
+        allkwArgs = ", ".join(f"{key}={value}" for key, value in allkwArgs.items())
+        logger.debug("Call %s(%s, %s)", func.__qualname__, allArgs, allkwArgs)
+        return function(*args, **kwArgs)
+    return wrapper
 
 
 def readableSize(byteSize: int, floating: int = 2, binary: bool = True) -> str:
