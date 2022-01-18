@@ -1,4 +1,6 @@
 """Module of Registry."""
+import functools
+import logging
 from typing import Dict, Union, Generic, TypeVar
 from vlutils.utils import pPrint
 
@@ -57,13 +59,18 @@ class Registry(Generic[T]):
             return key
 
     @classmethod
-    def get(cls, key: str) -> T:
+    def get(cls, key: str, logger = logging) -> T:
         """Get an object from registry.
 
         Args:
             key (str): The key for the registered object.
         """
-        return cls._map[key]
+        result = cls._map[key]
+        if isinstance(result, functools.partial):
+            logger.debug("Get `%s.%s` from `%s`.", result.func.__module__, result.func.__qualname__, cls.__name__)
+        else:
+            logger.debug("Get `%s.%s` from `%s`.", result.__module__, result.__qualname__, cls.__name__)
+        return result
 
     @classmethod
     def summary(cls) -> str:
