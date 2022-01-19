@@ -185,6 +185,7 @@ class KeywordRichHandler(rich.logging.RichHandler):
         ],
         "logging.keyword": [
             "latest",
+            "last",
             "starting",
             "starts",
             "started",
@@ -242,12 +243,14 @@ class KeywordRichHandler(rich.logging.RichHandler):
         message_text = Text.from_markup(message) if use_markup else Text(message)
 
         highlighter = getattr(record, "highlighter", self.highlighter)
-        if highlighter:
-            message_text = highlighter(message_text)
 
         if self.KEYWORDS:
             for key, value in self.KEYWORDS.items():
                 message_text.highlight_words(value, key, case_sensitive=False)
+
+        if highlighter:
+            message_text = highlighter(message_text)
+
         return message_text
 
 

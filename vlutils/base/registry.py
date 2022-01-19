@@ -67,9 +67,9 @@ class Registry(Generic[T]):
         """
         result = cls._map[key]
         if isinstance(result, functools.partial):
-            logger.debug("Get `%s.%s` from `%s`.", result.func.__module__, result.func.__qualname__, cls.__name__)
+            logger.debug("Get <%s.%s> from \"%s\".", result.func.__module__, result.func.__qualname__, cls.__name__)
         else:
-            logger.debug("Get `%s.%s` from `%s`.", result.__module__, result.__qualname__, cls.__name__)
+            logger.debug("Get <%s.%s> from \"%s\".", result.__module__, result.__qualname__, cls.__name__)
         return result
 
     @classmethod
