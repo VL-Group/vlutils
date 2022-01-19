@@ -1,9 +1,12 @@
 """Module of runtime utils"""
+from typing import Union
 import os
 import logging
 from pprint import pformat
 import time
 from typing import List, Dict, Tuple
+
+from .types import StrPath
 
 import torch
 import pynvml
@@ -16,6 +19,11 @@ __all__ = [
     "Timer"
 ]
 
+def relativePath(path: StrPath, start: Union[StrPath, None] = None):
+    result = os.path.relpath(path, start)
+    if not result.startswith("../"):
+        result = "./" + result
+    return result
 
 def preAllocateMem(memSize: int):
     """Pre-allocate VRAM in GPUs.
