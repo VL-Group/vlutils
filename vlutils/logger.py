@@ -1,5 +1,5 @@
 """Module of logging"""
-from typing import TypeVar
+from typing import ClassVar, Dict, List, Optional, TypeVar, Union
 import functools
 import os
 import sys
@@ -11,6 +11,8 @@ import datetime
 import multiprocessing
 import time
 import rich.logging
+from rich.console import ConsoleRenderable
+from rich.text import Text
 
 from vlutils.base.decoratorContextManager import DecoratorContextManager
 from .io import rotateItems
@@ -161,7 +163,95 @@ class _DeprecationFilter:
         return 1
 
 
-def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
+class KeywordRichHandler(rich.logging.RichHandler):
+    KEYWORDS: ClassVar[Optional[Dict[str, List[str]]]] = {
+        "logging.level.debug": [ # green
+            "good",
+            "better",
+            "best",
+            "Successfully",
+            "Successful",
+            "Success"
+        ],
+        "logging.level.info": [ # blue
+            "base",
+            "calling",
+            "called",
+            "calls",
+            "call",
+            "mounted",
+            "mounts",
+            "mount"
+        ],
+        "logging.keyword": [
+            "latest",
+            "starting",
+            "starts",
+            "started",
+            "start",
+            "begun",
+            "beginning",
+            "begins",
+            "begin",
+            "created",
+            "creates",
+            "creating",
+            "create",
+            "get",
+            "master",
+            "nccl",
+            "main",
+            "···",
+            "total",
+            "trained",
+            "training",
+            "trains",
+            "train",
+            "validation",
+            "validating",
+            "validates",
+            "validated",
+            "validate",
+            "testing",
+            "tested",
+            "tests",
+            "test"
+        ],
+        "logging.level.warning": [
+            "ended",
+            "ends",
+            "end",
+            "finished",
+            "finish",
+            "killed",
+            "kills",
+            "kill",
+            "interrupted",
+            "interrupts",
+            "interrupt",
+            "quit",
+            "worse",
+            "bad",
+            "slower",
+            "slow"
+        ]
+    }
+
+    def render_message(self, record: LogRecord, message: str) -> ConsoleRenderable:
+        use_markup = getattr(record, "markup", self.markup)
+        message_text = Text.from_markup(message) if use_markup else Text(message)
+
+        highlighter = getattr(record, "highlighter", self.highlighter)
+        if highlighter:
+            message_text = highlighter(message_text)
+
+        if self.KEYWORDS:
+            for key, value in self.KEYWORDS.items():
+                message_text.highlight_words(value, key, case_sensitive=False)
+        return message_text
+
+
+def configLogging(logDir: str, rootName: str = "", level: Union[str, int] = logging.INFO, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
     """Logger configuration.
 
     Args:
@@ -201,9 +291,8 @@ def configLogging(logDir: str, rootName: str = "", level: str = logging.INFO, lo
         },
         "handlers": {
             "console": {
-                "class": "rich.logging.RichHandler",
+                "class": "vlutils.logger.KeywordRichHandler",
                 "level": level,
-                "markup": True,
                 "rich_tracebacks": True,
                 "tracebacks_show_locals": True,
                 "log_time_format": r"%m/%d %H:%M"
