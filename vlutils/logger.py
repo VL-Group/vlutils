@@ -164,79 +164,13 @@ class _DeprecationFilter:
 
 
 class KeywordRichHandler(rich.logging.RichHandler):
-    KEYWORDS: ClassVar[Optional[Dict[str, List[str]]]] = {
-        "logging.level.debug": [ # green
-            "good",
-            "better",
-            "best",
-            "Successfully",
-            "Successful",
-            "Success"
-        ],
-        "logging.level.info": [ # blue
-            "base",
-            "calling",
-            "called",
-            "calls",
-            "call",
-            "mounted",
-            "mounts",
-            "mount"
-        ],
-        "logging.keyword": [
-            "latest",
-            "last",
-            "starting",
-            "starts",
-            "started",
-            "start",
-            "begun",
-            "beginning",
-            "begins",
-            "begin",
-            "created",
-            "creates",
-            "creating",
-            "create",
-            "get",
-            "master",
-            "nccl",
-            "main",
-            "···",
-            "total",
-            "trained",
-            "training",
-            "trains",
-            "train",
-            "validation",
-            "validating",
-            "validates",
-            "validated",
-            "validate",
-            "testing",
-            "tested",
-            "tests",
-            "test"
-        ],
-        "logging.level.warning": [
-            "ended",
-            "ends",
-            "end",
-            "finished",
-            "finish",
-            "killed",
-            "kills",
-            "kill",
-            "interrupted",
-            "interrupts",
-            "interrupt",
-            "quit",
-            "worse",
-            "bad",
-            "slower",
-            "slow"
-        ]
-    }
+    KEYWORDS: ClassVar[Optional[List[str]]] = [
+        r"(?P<green>\b([gG]ood|[bB]etter|[bB]est|[sS]uccess(|ful|fully))\b)",
+        r"(?P<blue>\b([bB]ase|[cC]all(|s|ed|ing)|[Mm]ount(|s|ed|ing))\b)",
+        r"(?P<cyan>\b([mM]aster|nccl|NCCL|[mM]ain|···|[tT]otal|[tT]rain(|s|ed|ing)|[vV]alidate(|s|d)|[vV]alidat(|ing|ion)|[tT]est(|s|ed|ing))\b)",
+        r"(?P<yellow>\b([lL]atest|[lL]ast|[sS]tart(|s|ed|ing)|[bB]egin(|s|ning)|[bB]egun|[cC]reate(|s|d|ing)|[gG]et(|s|ting)|[gG]ot|)\b)",
+        r"(?P<red>\b([eE]nd(|s|ed|ing)|[fF]inish(|es|ed|ing)|[kK]ill(|s|ed|ing)|[iI]terrupt(|s|ed|ting)|[qQ]uit|QUIT|[eE]xit|EXIT|[bB]ad|[wW]orse|[sS]low(|er))\b)"
+    ]
 
     def render_message(self, record: LogRecord, message: str) -> ConsoleRenderable:
         use_markup = getattr(record, "markup", self.markup)
@@ -245,8 +179,9 @@ class KeywordRichHandler(rich.logging.RichHandler):
         highlighter = getattr(record, "highlighter", self.highlighter)
 
         if self.KEYWORDS:
-            for key, value in self.KEYWORDS.items():
-                message_text.highlight_words(value, key, case_sensitive=False)
+            for keyword in self.KEYWORDS:
+                message_text.highlight_regex(keyword)
+                # message_text.highlight_words(value, key, case_sensitive=False)
 
         if highlighter:
             message_text = highlighter(message_text)

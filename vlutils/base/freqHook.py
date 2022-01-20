@@ -73,9 +73,9 @@ class FrequecyHook:
             if step % key == 0:
                 results[key] = list()
                 for fn in value:
-                    results[key].append(fn(step, *args, **kwArgs))
                     func = inspectFunction(fn)
-                    self._logger.debug("Frequency hook calls <%s.%s> with frequency %d", func.__module__, func.__qualname__, key)
+                    self._logger.debug("Calls <%s.%s> by FrequecyHook@%d", func.__module__, func.__qualname__, key)
+                    results[key].append(fn(step, *args, **kwArgs))
         return results
 
     def __str__(self) -> str:
