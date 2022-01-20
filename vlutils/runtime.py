@@ -1,6 +1,7 @@
 """Module of runtime utils"""
 import functools
 from typing import Callable, Union
+from types import FunctionType, MethodType
 import os
 import logging
 from pprint import pformat
@@ -24,6 +25,22 @@ def inspectFunction(function: Callable) -> Callable:
     if isinstance(function, functools.partial):
         return function.func
     return function
+
+def _fullName(function):
+    if hasattr(function, "__qualname__"):
+        return f"{function.__module__}.{function.__qualname__}"
+    if hasattr(function, "__class__"):
+        return f"{function.__module__}.{function.__class__.__name__}"
+    return repr(function)
+
+def functionFullName(function: Callable) -> str:
+    if isinstance(function, functools.partial):
+        return functionFullName(function.func)
+    if isinstance(function, (FunctionType, MethodType)):
+        return _fullName(function)
+    if (function.__str__ is not object.__str__) or (type(function).__str__ is not object.__str__):
+        return function.__str__()
+    return _fullName(function)
 
 def relativePath(path: StrPath, start: Union[StrPath, None] = None):
     result = os.path.relpath(path, start)

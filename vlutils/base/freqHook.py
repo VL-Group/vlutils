@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Callable, Any, List, Tuple, Union
 
-from vlutils.runtime import inspectFunction
+from vlutils.runtime import functionFullName
 
 __all__ = [
     "FrequecyHook"
@@ -73,18 +73,18 @@ class FrequecyHook:
             if step % key == 0:
                 results[key] = list()
                 for fn in value:
-                    func = inspectFunction(fn)
-                    self._logger.debug("Calls <%s.%s> by FrequecyHook@%d", func.__module__, func.__qualname__, key)
+                    fullName = functionFullName(fn)
+                    self._logger.debug("Calls %s by FrequecyHook@%d", fullName, key)
                     results[key].append(fn(step, *args, **kwArgs))
         return results
 
     def __str__(self) -> str:
-        pretty = { f"Every {key} times calls": [f"<{fn.__module__}.{fn.__qualname__}>" for fn in (inspectFunction(func) for func in value)] for key, value in self._hooks.items() }
+        pretty = { f"{key}": [f"<{fullName}>" for fullName in (functionFullName(func) for func in value)] for key, value in self._hooks.items() }
         result = ""
         for key, value in pretty.items():
             value = ", ".join(value)
             result += f"{key}:\r\n    [{value}]\r\n"
-        return result
+        return f"FrequencyHook(\r\n{result})"
 
 
 class ChainHook:
@@ -94,3 +94,8 @@ class ChainHook:
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         for hook in self._hooks:
             hook(*args, **kwds)
+
+    def __str__(self) -> str:
+        hookNames = [functionFullName(h) for h in self._hooks]
+        hookNames = ",\r\n    ".join(hookNames)
+        return f"ChainHook(\r\n    {hookNames})"

@@ -1,5 +1,5 @@
 """Module of logging"""
-from typing import ClassVar, Dict, List, Optional, TypeVar, Union
+from typing import Callable, ClassVar, Dict, List, Optional, TypeVar, Union
 import functools
 import os
 import sys
@@ -16,6 +16,7 @@ from rich.text import Text
 
 from vlutils.base.decoratorContextManager import DecoratorContextManager
 from .io import rotateItems
+from .runtime import functionFullName
 
 
 __all__ = [
@@ -27,23 +28,22 @@ __all__ = [
 
 T = TypeVar("T")
 
-def trackingFunctionCalls(function: T, logger=logging) -> T:
+def trackingFunctionCalls(function: Callable, logger=logging) -> Callable:
+    fullName = functionFullName(function)
+    if isinstance(function, functools.partial):
+        funcArgs = function.args
+        # Python 3.9+
+        funcKwArgs = function.keywords
+    else:
+        funcArgs = ()
+        funcKwArgs = dict()
     def wrapper(*args, **kwArgs):
-        if isinstance(function, functools.partial):
-            allArgs = function.args + args
-            # Python 3.9+
-            allkwArgs = function.keywords | kwArgs
-            func = function.func
-        else:
-            allArgs = args
-            allkwArgs = kwArgs
-            func = function
-        allArgs = ", ".join(str(arg) for arg in allArgs)
-        allkwArgs = ", ".join(f"{key}={value}" for key, value in allkwArgs.items())
+        allArgs = ", ".join(str(arg) for arg in (args + funcArgs))
+        allkwArgs = ", ".join(f"{key}={value}" for key, value in (kwArgs | funcKwArgs).items())
         if len(allArgs) > 0:
-            logger.debug("Call %s(%s, %s)", f"{func.__module__}.{func.__qualname__}", allArgs, allkwArgs)
+            logger.debug("Call %s(%s, %s)", fullName, allArgs, allkwArgs)
         else:
-            logger.debug("Call %s(%s)", f"{func.__module__}.{func.__qualname__}", allkwArgs)
+            logger.debug("Call %s(%s)", fullName, allkwArgs)
         return function(*args, **kwArgs)
     return wrapper
 
