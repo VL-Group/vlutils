@@ -237,7 +237,7 @@ def configLogging(logDir: str, rootName: str = "", level: Union[str, int] = logg
             },
             "info_file": {
                 "class": "logging.FileHandler",
-                "level": "INFO",
+                "level": level,
                 "formatter": "full",
                 "filename": f"{fPrefix}.log",
                 "mode": "w"
