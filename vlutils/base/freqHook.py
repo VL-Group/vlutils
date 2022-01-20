@@ -1,6 +1,7 @@
-from pprint import pformat
+import logging
 from typing import Dict, Callable, Any, List, Tuple, Union
 
+from vlutils.runtime import inspectFunction
 
 __all__ = [
     "FrequecyHook"
@@ -36,8 +37,9 @@ class FrequecyHook:
     Args:
         freqAndHooks (Dict[int, Callable]): The function (`value`) to call every `key` steps.
     """
-    def __init__(self, *freqAndHooks: Tuple[int, Callable]):
+    def __init__(self, *freqAndHooks: Tuple[int, Callable], logger=logging):
         self._hooks: Dict[int, List[Callable]] = dict()
+        self._logger = logger
         for key, value in freqAndHooks:
             if key not in self._hooks:
                 self._hooks[key] = list()
@@ -72,10 +74,12 @@ class FrequecyHook:
                 results[key] = list()
                 for fn in value:
                     results[key].append(fn(step, *args, **kwArgs))
+                    func = inspectFunction(fn)
+                    self._logger.debug("Frequency hook calls <%s.%s> with frequency %d", func.__module__, func.__qualname__, key)
         return results
 
     def __str__(self) -> str:
-        pretty = { f"Every {key} times calls": [f"<{fn.__module__}.{fn.__qualname__}>" for fn in value] for key, value in self._hooks.items() }
+        pretty = { f"Every {key} times calls": [f"<{fn.__module__}.{fn.__qualname__}>" for fn in (inspectFunction(func) for func in value)] for key, value in self._hooks.items() }
         result = ""
         for key, value in pretty.items():
             value = ", ".join(value)

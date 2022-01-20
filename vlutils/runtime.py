@@ -1,5 +1,6 @@
 """Module of runtime utils"""
-from typing import Union
+import functools
+from typing import Callable, Union
 import os
 import logging
 from pprint import pformat
@@ -18,6 +19,11 @@ __all__ = [
     "gpuInfo",
     "Timer"
 ]
+
+def inspectFunction(function: Callable) -> Callable:
+    if isinstance(function, functools.partial):
+        return function.func
+    return function
 
 def relativePath(path: StrPath, start: Union[StrPath, None] = None):
     result = os.path.relpath(path, start)

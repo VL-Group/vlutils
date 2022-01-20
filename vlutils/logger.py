@@ -41,9 +41,9 @@ def trackingFunctionCalls(function: T, logger=logging) -> T:
         allArgs = ", ".join(str(arg) for arg in allArgs)
         allkwArgs = ", ".join(f"{key}={value}" for key, value in allkwArgs.items())
         if len(allArgs) > 0:
-            logger.debug("Call %s(%s, %s)", func.__qualname__, allArgs, allkwArgs)
+            logger.debug("Call %s(%s, %s)", f"{func.__module__}.{func.__qualname__}", allArgs, allkwArgs)
         else:
-            logger.debug("Call %s(%s)", func.__qualname__, allkwArgs)
+            logger.debug("Call %s(%s)", f"{func.__module__}.{func.__qualname__}", allkwArgs)
         return function(*args, **kwArgs)
     return wrapper
 
