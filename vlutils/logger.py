@@ -1,5 +1,5 @@
 """Module of logging"""
-from typing import Callable, ClassVar, Dict, List, Optional, TypeVar, Union
+from typing import ClassVar, List, Optional, TypeVar, Union
 import functools
 import os
 import sys
@@ -28,7 +28,7 @@ __all__ = [
 
 T = TypeVar("T")
 
-def trackingFunctionCalls(function: Callable, logger=logging) -> Callable:
+def trackingFunctionCalls(function: T, logger=logging) -> T:
     fullName = functionFullName(function)
     if isinstance(function, functools.partial):
         funcArgs = function.args

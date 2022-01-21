@@ -112,85 +112,15 @@ class Saver(SummaryWriter):
     def Logger(self, logger: logging.Logger):
         logger = logger or logging
         self._logger = logger
-
-    def setLevel(self, level):
-        """
-        Set the logging level of this logger.  level must be an int or a str.
-        """
-        self._logger.setLevel(level)
-
-    def debug(self, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with severity 'DEBUG'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.debug("Houston, we have a %s", "thorny problem", exc_info=1)
-        """
-        self._logger.debug(msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with severity 'INFO'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.info("Houston, we have a %s", "interesting problem", exc_info=1)
-        """
-        self._logger.info(msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with severity 'WARNING'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.warning("Houston, we have a %s", "bit of a problem", exc_info=1)
-        """
-        self._logger.warning(msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with severity 'ERROR'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.error("Houston, we have a %s", "major problem", exc_info=1)
-        """
-        self._logger.error(msg, *args, **kwargs)
-
-    def exception(self, msg, *args, exc_info=True, **kwargs):
-        """
-        Convenience method for logging an ERROR with exception information.
-        """
-        self._logger.error(msg, *args, exc_info=exc_info, **kwargs)
-
-    def critical(self, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with severity 'CRITICAL'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.critical("Houston, we have a %s", "major disaster", exc_info=1)
-        """
-        self._logger.critical(msg, *args, **kwargs)
-
-    def log(self, level, msg, *args, **kwargs):
-        """
-        Log 'msg % args' with the integer severity 'level'.
-
-        To pass exception information, use the keyword argument exc_info with
-        a true value, e.g.
-
-        logger.log(level, "We have a %s", "mysterious problem", exc_info=1)
-        """
-        self._logger.log(level, msg, *args, **kwargs)
-
+        self.setLevel = self._logger.setLevel
+        self.debug = self._logger.debug
+        self.info = self._logger.info
+        self.warning = self._logger.warning
+        self.warn = self._logger.warn
+        self.error = self._logger.error
+        self.exception = self._logger.exception
+        self.critical = self._logger.critical
+        self.log = self._logger.log
 
     def _dumpFile(self, path: StrPath):
         shutil.copytree(path, os.path.join(self._saveDir, "dump"), symlinks=True, ignore=lambda src, path: [x for x in path if x == "__pycache__"], ignore_dangling_symlinks=True)

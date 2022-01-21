@@ -83,7 +83,7 @@ class FrequecyHook:
         result = ""
         for key, value in pretty.items():
             value = ", ".join(value)
-            result += f"    {key}:\r\n            [{value}]\r\n"
+            result += f"    {key}:\r\n        [{value}]\r\n"
         return f"FrequencyHook(\r\n{result})"
 
 
