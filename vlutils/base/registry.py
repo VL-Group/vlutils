@@ -1,7 +1,7 @@
 """Module of Registry."""
 import functools
 import logging
-from typing import Dict, Union, Generic, TypeVar
+from typing import Callable, Dict, Union, Generic, TypeVar
 from vlutils.utils import pPrint
 
 
@@ -43,14 +43,14 @@ class Registry(Generic[T]):
         cls._map: Dict[str, T] = dict()
 
     @classmethod
-    def register(cls, key: Union[str, T]) -> T:
+    def register(cls, key):
         """Decorator for register anything into registry.
 
         Args:
             key (str): The key for registering an object.
         """
         if isinstance(key, str):
-            def insert(value: T):
+            def insert(value: T) -> T:
                 cls._map[key] = value
                 return value
             return insert

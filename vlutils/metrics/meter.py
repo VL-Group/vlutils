@@ -33,6 +33,10 @@ class Handler(abc.ABC):
     def __str__(self) -> str:
         return self._format % (self.accumulated / self.length)
 
+    def reset(self):
+        self.accumulated = 0.0
+        self.length = 0
+
     @abc.abstractmethod
     def handle(self, *args: Any, **kwds: Any) -> List[float]:
         raise NotImplementedError
@@ -45,16 +49,25 @@ class Meters:
         for handler in self._handlers:
             handler(*args, **kwds)
 
+    def reset(self):
+        for handler in self._handlers:
+            handler.reset()
+
     def summary(self, reset: bool = False):
-        return {
-            handler.__class__.__name__: str(handler)
+        result = ", ".join("%s: %s" %
+            (handler.__class__.__name__, handler)
                 for handler
-                    in self._handlers
-        }
+                    in self._handlers)
+        if reset:
+            self.reset()
+        return result
 
     def results(self, reset: bool = False):
-        return {
+        result = {
             handler.__class__.__name__: handler.Result
                 for handler
                     in self._handlers
         }
+        if reset:
+            self.reset()
+        return result
