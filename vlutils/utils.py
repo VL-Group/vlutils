@@ -1,7 +1,11 @@
+from typing import Any
 import re
 import yaml
 from io import StringIO
 
+
+def strNoneorEmpty(string: Any):
+    return string is None or not (string or string.strip())
 
 def _alignYAML(str, pad=0, aligned_colons=False):
     props = re.findall(r'^\s*[\S]+:', str, re.MULTILINE)

@@ -251,4 +251,16 @@ class DummySaver(Saver):
 
     @staticmethod
     def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
-        raise NotImplementedError("Dummy saver does not implement `load` function.")
+        savedDict = torch.load(filePath, map_location=mapLocation)
+        for key, value in objs.items():
+            stateDict = savedDict[key]
+            if isinstance(value, torch.nn.Module):
+                value.load_state_dict(stateDict, strict=strict)
+            elif callable(getattr(value, "load_state_dict", None)):
+                value.load_state_dict(stateDict)
+            else:
+                if isinstance(value, torch.Tensor):
+                    value.data = stateDict
+                else:
+                    objs[key] = stateDict
+        return objs
