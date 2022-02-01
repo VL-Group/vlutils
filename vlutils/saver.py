@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict, Union
+from typing import Any, Dict
 import os
 import logging
 import shutil
@@ -166,7 +166,7 @@ class Saver(SummaryWriter):
         self.debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: logging.Logger = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
@@ -250,7 +250,7 @@ class DummySaver(Saver):
         raise NotImplementedError("Dummy saver does not implement `save` function.")
 
     @staticmethod
-    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: logging.Logger = None, **objs: Any) -> Dict[str, Any]:
         savedDict = torch.load(filePath, map_location=mapLocation)
         for key, value in objs.items():
             stateDict = savedDict[key]
