@@ -14,6 +14,10 @@ class Handler(abc.ABC):
         return self
 
     @property
+    def ShowInSummary(self) -> bool:
+        return True
+
+    @property
     def Length(self) -> int:
         return self.length
 
@@ -57,7 +61,7 @@ class Meters:
         result = ", ".join("%s: %s" %
             (handler.__class__.__name__, handler)
                 for handler
-                    in self._handlers)
+                    in self._handlers if handler.ShowInSummary)
         if reset:
             self.reset()
         return result
@@ -66,7 +70,7 @@ class Meters:
         result = {
             handler.__class__.__name__: handler.Result
                 for handler
-                    in self._handlers
+                    in self._handlers if handler.ShowInSummary
         }
         if reset:
             self.reset()
