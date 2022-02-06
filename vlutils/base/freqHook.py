@@ -74,7 +74,7 @@ class FrequecyHook:
                 results[key] = list()
                 for fn in value:
                     fullName = functionFullName(fn)
-                    self._logger.debug("Calls %s(...) by FrequecyHook@%d", fullName, key)
+                    self._logger.debug("Call %s(...) by FrequecyHook@%d", fullName, key)
                     results[key].append(fn(step, *args, **kwArgs))
         return results
 

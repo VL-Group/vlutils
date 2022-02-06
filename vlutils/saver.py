@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict
+from typing import Any, Dict, Union, Optional
 import os
 import logging
 import shutil
@@ -166,7 +166,7 @@ class Saver(SummaryWriter):
         self.debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: logging.Logger = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Optional[Union[logging.Logger, "Saver"]] = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:

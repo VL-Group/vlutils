@@ -70,7 +70,7 @@ class Meters:
         result = {
             handler.__class__.__name__: handler.Result
                 for handler
-                    in self._handlers if handler.ShowInSummary
+                    in self._handlers
         }
         if reset:
             self.reset()
