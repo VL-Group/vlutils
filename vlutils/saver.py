@@ -13,7 +13,7 @@ import yaml
 
 from .io import rotateItems
 from .config import serialize
-from .logger import configLogging
+from .logger import configLogging, LoggerBase
 from .types import StrPath
 from .runtime import relativePath
 
@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-class Saver(SummaryWriter):
+class Saver(SummaryWriter, LoggerBase):
     """A class for load and save model
 
     Example:
@@ -56,7 +56,7 @@ class Saver(SummaryWriter):
             _saveDir = saveDir
         return os.path.join(_saveDir, saveName)
 
-    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None, activateTensorboard: bool = True):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Optional[Any] = None, autoManage: bool = True, maxItems: int = 25, reserve: Optional[bool] = False, dumpFile: Optional[str] = None, activateTensorboard: bool = True):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -103,6 +103,33 @@ class Saver(SummaryWriter):
             return self._url
         else:
             raise RuntimeError("No tensorboard listening.")
+
+    def setLevel(self, level):
+        pass
+
+    def debug(self, msg, *args, **kwargs):
+        pass
+
+    def info(self, msg, *args, **kwargs):
+        pass
+
+    def warning(self, msg, *args, **kwargs):
+        pass
+
+    def warn(self, msg, *args, **kwargs):
+        pass
+
+    def error(self, msg, *args, **kwargs):
+        pass
+
+    def exception(self, msg, *args, exc_info=True, **kwargs):
+        pass
+
+    def critical(self, msg, *args, **kwargs):
+        pass
+
+    def log(self, level, msg, *args, **kwargs):
+        pass
 
     @property
     def Logger(self) -> logging.Logger:
@@ -196,10 +223,8 @@ class Saver(SummaryWriter):
         return objs
 
 
-
-
-class DummySaver(Saver):
-    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Any = None, autoManage: bool = True, maxItems: int = 25, reserve: bool = False, dumpFile: str = None, activateTensorboard: bool = False):
+class DummySaver(Saver, LoggerBase):
+    def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Optional[Any] = None, autoManage: bool = True, maxItems: int = 25, reserve: Optional[bool] = False, dumpFile: Optional[str] = None, activateTensorboard: bool = False):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
         if autoManage:
@@ -226,6 +251,9 @@ class DummySaver(Saver):
         pass
 
     def warning(self, msg, *args, **kwargs):
+        pass
+
+    def warn(self, msg, *args, **kwargs):
         pass
 
     def error(self, msg, *args, **kwargs):

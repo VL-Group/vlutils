@@ -50,7 +50,7 @@ class Registry(Generic[T]):
             key (str): The key for registering an object.
         """
         if isinstance(key, str):
-            def insert(value: T) -> T:
+            def insert(value):
                 cls._map[key] = value
                 return value
             return insert
@@ -59,7 +59,7 @@ class Registry(Generic[T]):
             return key
 
     @classmethod
-    def get(cls, key: str, logger = logging) -> T:
+    def get(cls, key: str, logger: Union[logging.Logger, "vlutils.logger.LoggerBase"] = logging.root) -> T:
         """Get an object from registry.
 
         Args:

@@ -37,7 +37,7 @@ class FrequecyHook:
     Args:
         freqAndHooks (Dict[int, Callable]): The function (`value`) to call every `key` steps.
     """
-    def __init__(self, *freqAndHooks: Tuple[int, Callable], logger=logging):
+    def __init__(self, *freqAndHooks: Tuple[int, Callable], logger: Union[logging.Logger, "vlutils.logger.LoggerBase"]=logging):
         self._hooks: Dict[int, List[Callable]] = dict()
         self._logger = logger
         for key, value in freqAndHooks:
