@@ -38,6 +38,7 @@ class Registry(Generic[T]):
         assert isinstance(instance, Bar)
     ```
     """
+    _map: Dict[str, T]
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         cls._map: Dict[str, T] = dict()
@@ -59,14 +60,16 @@ class Registry(Generic[T]):
             return key
 
     @classmethod
-    def get(cls, key: str, logger: Union[logging.Logger, "vlutils.logger.LoggerBase"] = logging.root) -> T:
+    def get(cls, key: str, default = None, logger: Union[logging.Logger, "vlutils.logger.LoggerBase"] = logging.root) -> T:
         """Get an object from registry.
 
         Args:
             key (str): The key for the registered object.
         """
-        result = cls._map[key]
-        if isinstance(result, functools.partial):
+        result = cls._map.get(key, default)
+        if result is None:
+            logger.debug("Get None from \"%s\".", cls.__name__)
+        elif isinstance(result, functools.partial):
             logger.debug("Get <%s.%s> from \"%s\".", result.func.__module__, result.func.__qualname__, cls.__name__)
         else:
             logger.debug("Get <%s.%s> from \"%s\".", result.__module__, result.__qualname__, cls.__name__)
