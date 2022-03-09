@@ -228,7 +228,7 @@ class KeywordRichHandler(rich.logging.RichHandler):
         return message_text
 
 
-def configLogging(logDir: str, rootName: str = "", level: Union[str, int] = logging.INFO, logName: str = None, rotateLogs: int = 10, ignoreWarnings: list = None) -> logging.Logger:
+def configLogging(logDir: Optional[str] = None, rootName: str = "", level: Union[str, int] = logging.INFO, logName: Optional[str] = None, rotateLogs: int = 10, ignoreWarnings: Optional[list] = None) -> logging.Logger:
     """Logger configuration.
 
     Args:
@@ -243,13 +243,17 @@ def configLogging(logDir: str, rootName: str = "", level: Union[str, int] = logg
     Returns:
         logging.Logger: The configed logger.
     """
-    os.makedirs(logDir, exist_ok=True)
-    if rotateLogs > 0:
-        rotateItems(logDir, rotateLogs)
-    if logName is None:
-        fPrefix = os.path.join(logDir, "{0}".format(datetime.datetime.now().strftime(r"%y%m%d-%H%M%S")))
+    if logDir is not None:
+        os.makedirs(logDir, exist_ok=True)
+        if rotateLogs > 0:
+            rotateItems(logDir, rotateLogs)
+        if logName is None:
+            fPrefix = os.path.join(logDir, "{0}".format(datetime.datetime.now().strftime(r"%y%m%d-%H%M%S")))
+        else:
+            fPrefix = os.path.join(logDir, logName)
+        logFile = f"{fPrefix}.log"
     else:
-        fPrefix = os.path.join(logDir, logName)
+        logFile = os.devnull
     logging_config = {
         "version": 1,
         "formatters": {
@@ -271,14 +275,14 @@ def configLogging(logDir: str, rootName: str = "", level: Union[str, int] = logg
                 "class": "vlutils.logger.KeywordRichHandler",
                 "level": level,
                 "rich_tracebacks": True,
-                "tracebacks_show_locals": True,
+                "tracebacks_show_locals": False,
                 "log_time_format": r"%m/%d %H:%M"
             },
             "info_file": {
                 "class": "logging.FileHandler",
                 "level": level,
                 "formatter": "full",
-                "filename": f"{fPrefix}.log",
+                "filename": logFile,
                 "mode": "w"
             }
         },

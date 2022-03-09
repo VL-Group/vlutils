@@ -82,7 +82,7 @@ class Saver(SummaryWriter, LoggerBase):
 
         if config is not None:
             with open(os.path.join(self._saveDir, "config.yaml"), "w") as fp:
-                yaml.dump(serialize(config), fp)
+                yaml.dump(config, fp)
         if dumpFile is not None and not str.isspace(dumpFile) and os.path.exists(dumpFile):
             self._dumpFile(dumpFile)
 

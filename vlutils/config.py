@@ -128,7 +128,7 @@ def serialize(instance: Any, logger: Logger = None) -> dict:
     return _serialize(instance)
 
 
-def summary(instance, logger: Logger = None) -> str:
+def summary(instance: dict, logger: Logger = None) -> str:
     """Serialize any object to yaml format summary
 
     Args:
@@ -138,7 +138,7 @@ def summary(instance, logger: Logger = None) -> str:
         str: The serialized string.
     """
     with StringIO() as stream:
-        yaml.safe_dump(serialize(instance), stream, default_flow_style=False)
+        yaml.safe_dump(instance, stream, default_flow_style=False)
         return stream.getvalue()
 
 
