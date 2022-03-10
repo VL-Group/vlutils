@@ -1,0 +1,22 @@
+package:
+  name: vlutils
+  version: "{{ GIT_DESCRIBE_TAG }}"
+
+source:
+  path: ../
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  host:
+    - python>=3.9
+    - pytorch>=1.7
+    - tqdm
+    - rich
+
+about:
+  home: https://github.com/cfm-uestc/vlutils
+  license: Apache-2.0
+  summary: VL-Group Utilities
