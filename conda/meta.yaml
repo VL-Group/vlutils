@@ -1,6 +1,8 @@
+{% set data = load_setup_py_data() %}
+
 package:
   name: vlutils
-  version: {{ environ.get('PKG_VERSION', '') }}
+  version: {{ data.get('version') }}
 
 source:
   path: ../
@@ -15,6 +17,9 @@ requirements:
     - pytorch>=1.7
     - tqdm
     - rich
+
+build:
+  noarch: generic
 
 about:
   home: https://github.com/cfm-uestc/vlutils
