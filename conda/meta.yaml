@@ -1,6 +1,6 @@
 package:
   name: vlutils
-  version: "{{ GIT_DESCRIBE_TAG }}"
+  version: {{ environ.get('PKG_VERSION', '') }}
 
 source:
   path: ../
