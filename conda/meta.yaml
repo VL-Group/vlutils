@@ -12,14 +12,16 @@ requirements:
     - python
     - setuptools
 
-  host:
+  run:
     - python>=3.9
     - pytorch>=1.7
     - tqdm
     - rich
+    - pynvml
 
 build:
-  noarch: generic
+  noarch: python
+  number: 1
 
 about:
   home: https://github.com/cfm-uestc/vlutils
