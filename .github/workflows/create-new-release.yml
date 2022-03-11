@@ -67,10 +67,7 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Publish distribution 📦 to Anaconda
-        uses: maxibor/conda-package-publish-action@v1.1
-        with:
-          subDir: 'conda'
-          AnacondaToken: ${{ secrets.ANACONDA_TOKEN }}
+        run: conda install anaconda-client conda-build && cd conda && ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} ./exec.sh
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
