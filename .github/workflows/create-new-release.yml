@@ -60,14 +60,14 @@ jobs:
           python-version: 3.9
       - name: Test
         run: echo "Test"
+      - name: Publish distribution 📦 to Anaconda
+        run: conda install anaconda-client conda-build && cd conda && ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} ./exec.sh
       - name: Make, build, package
         run: make all ARGS="--branch r${{ github.event.inputs.release-tag }}"
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-      - name: Publish distribution 📦 to Anaconda
-        run: conda activate && conda install anaconda-client conda-build && cd conda && ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} ./exec.sh
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
