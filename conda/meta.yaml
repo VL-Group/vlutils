@@ -21,7 +21,7 @@ requirements:
 
 build:
   noarch: python
-  number: 271
+  number: 272
 
 about:
   home: https://github.com/cfm-uestc/vlutils
