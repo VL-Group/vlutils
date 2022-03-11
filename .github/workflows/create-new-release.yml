@@ -67,7 +67,7 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Publish distribution 📦 to Anaconda
-        run: conda install anaconda-client conda-build && cd conda && ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} ./exec.sh
+        run: conda activate && conda install anaconda-client conda-build && cd conda && ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} ./exec.sh
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
