@@ -5,16 +5,20 @@ package:
   version: {{ data.get('version') }}
 
 source:
-  path: ../
+  - path: ../vlutils
+    folder: vlutils
+  - path: ../setup.py
+  - path: ../setup.cfg
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
+    - pytorch<2
 
   run:
     - python>=3.9
-    - pytorch>=1.7
+    - pytorch<2
     - tqdm
     - rich
     - pynvml
@@ -22,6 +26,7 @@ requirements:
 build:
   noarch: python
   number: 272
+  include_recipe: False
 
 about:
   home: https://github.com/cfm-uestc/vlutils
