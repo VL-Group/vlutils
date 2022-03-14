@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Bump version to ${{ github.event.inputs.release-tag }}
+name: Bump version
 # Controls when the action will run.
 on:
   # Allows you to run this workflow manually from the Actions tab
