@@ -64,7 +64,7 @@ class DefaultGroup(click.Group):
         self.default_cmd_name = cmd_name
 
     def parse_args(self, ctx, args):
-        if not args and self.default_if_no_args:
+        if (args in (["-h"], ["--help"])) or (not args and self.default_if_no_args):
             args.insert(0, self.default_cmd_name)
         return super(DefaultGroup, self).parse_args(ctx, args)
 
