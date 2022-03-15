@@ -12,8 +12,9 @@ source:
 
 requirements:
   host:
-    - python
+    - python>=3.9
     - setuptools
+    - pip
     - pytorch<2
 
   run:
