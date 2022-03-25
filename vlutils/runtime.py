@@ -138,9 +138,9 @@ def queryGPU(wantsMore: bool = False, givenList: list = None, needGPUs: int = -1
     gpuList = []
     for i, g in gpus:
         if needVRamEachGPU < 0:
-            if g['memory.used'] < 64:
+            if g['memory.used'] < 1000:
                 # give space for basic vram
-                gpuList.append((i, (g['memory.total'] - g['memory.used'] - 64)))
+                gpuList.append((i, (g['memory.total'] - g['memory.used'] - 1000)))
                 logger.debug("adding gpu[%d] with %.2fMB free.", i, g['memory.total'] - g['memory.used'])
         elif g['memory.total'] - g['memory.used'] > needVRamEachGPU + 64:
             gpuList.append((i, (g['memory.total'] - g['memory.used'] - 64)))
