@@ -1,5 +1,5 @@
 """Module of Saver"""
-from typing import Any, Dict, Union, Optional
+from typing import Any, Callable, Dict, Union, Optional
 import os
 import logging
 import shutil
@@ -193,7 +193,7 @@ class Saver(SummaryWriter, LoggerBase):
         self.debug("Successfully saved checkpoint with keys: %s", list(saveDict.keys()))
 
     @staticmethod
-    def load(filePath: StrPath, mapLocation: Dict[str, str] = None, strict: bool = True, logger: Optional[Union[logging.Logger, "Saver"]] = None, **objs: Any) -> Dict[str, Any]:
+    def load(filePath: StrPath, mapLocation: Union[None, Callable, str, torch.device, Dict[str, Any]] = None, strict: bool = True, logger: Optional[Union[logging.Logger, "Saver"]] = None, **objs: Any) -> Dict[str, Any]:
         """Load from ckpt.
 
         Args:
