@@ -105,6 +105,3 @@ class ChainHook:
         hookNames = [functionFullName(h) for h in self._hooks]
         hookNames = ",\r\n    ".join(hookNames)
         return f"ChainHook(\r\n    {hookNames})"
-
-    def __repr__(self) -> str:
-        return str(self)
