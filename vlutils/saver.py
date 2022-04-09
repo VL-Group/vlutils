@@ -233,6 +233,22 @@ class DummySaver(Saver, LoggerBase):
             self._saveDir = saveDir
         self._savePath = os.path.join(self._saveDir, saveName)
 
+    @staticmethod
+    def _nop(*args, **kwds):
+        pass
+
+    def __getattribute__(self, name: str) -> Any:
+        # A summary saver method, return nop
+        if name.startswith("add_"):
+            return self._nop
+        return super().__getattribute__(name)
+
+    def flush(self):
+        pass
+
+    def close(self):
+        pass
+
     @property
     def Logger(self) -> logging.Logger:
         raise NotImplementedError("Dummy saver does not have logger.")
