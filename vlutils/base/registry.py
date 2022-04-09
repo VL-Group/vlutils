@@ -2,9 +2,9 @@
 import functools
 import os
 import logging
-from typing import Callable, Dict, Union, Generic, TypeVar
-from vlutils.utils import pPrint
+from typing import Dict, Union, Generic, TypeVar
 
+from vlutils.utils import pPrint
 
 T = TypeVar("T")
 
@@ -75,6 +75,21 @@ class Registry(Generic[T]):
         else:
             logger.debug("Get <%s.%s> from \"%s\".", result.__module__, result.__qualname__, cls.__name__)
         return result
+
+    @classmethod
+    def values(cls):
+        """Get all registered objects."""
+        return cls._map.values()
+
+    @classmethod
+    def keys(cls):
+        """Get all registered keys."""
+        return cls._map.keys()
+
+    @classmethod
+    def items(cls):
+        """Get all registered key-value pairs."""
+        return cls._map.items()
 
     @classmethod
     def summary(cls) -> str:
