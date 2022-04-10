@@ -12,13 +12,12 @@ source:
 
 requirements:
   host:
-    - python>=3.9
+    - python>=3.8
     - setuptools
     - pip
-    - pytorch<2
 
   run:
-    - python>=3.9
+    - python>=3.8
     - pytorch<2
     - tqdm
     - rich

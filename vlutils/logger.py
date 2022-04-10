@@ -77,8 +77,7 @@ def trackingFunctionCalls(function: T, logger: Union[logging.Logger, LoggerBase]
         funcKwArgs = dict()
     def wrapper(*args, **kwArgs):
         allArgs = ", ".join(str(arg) for arg in (args + funcArgs))
-        # Python 3.9+
-        allkwArgs = ", ".join(f"{key}={value}" for key, value in (kwArgs | funcKwArgs).items())
+        allkwArgs = ", ".join(f"{key}={value}" for key, value in {**kwArgs, **funcKwArgs}.items())
         if len(allArgs) > 0:
             logger.debug("Call %s(%s, %s)", fullName, allArgs, allkwArgs)
         else:
