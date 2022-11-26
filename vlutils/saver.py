@@ -96,6 +96,10 @@ class Saver(SummaryWriter, LoggerBase):
             self._url = url
         else:
             self._url = None
+        self._decorateFn = None
+
+    def decorate(self, decorateFn: Callable[[], str]):
+        self._decorateFn = decorateFn
 
     @property
     def TensorboardURL(self) -> str:
@@ -104,32 +108,40 @@ class Saver(SummaryWriter, LoggerBase):
         else:
             raise RuntimeError("No tensorboard listening.")
 
+    # Wait Logger.setter for monkey patch ↓↓
     def setLevel(self, level):
-        pass
+        self._logger.setLevel(level)
+
+    def _decorateWrapper(self, fn, msg, *args, **kwargs):
+        if self._decorateFn is not None:
+            msg = "[%s] " + msg
+            fn(msg, self._decorateFn(), *args, **kwargs)
+        else:
+            fn(msg, *args, **kwargs)
 
     def debug(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.debug, msg, *args, **kwargs)
 
     def info(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.info, msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.warning, msg, *args, **kwargs)
 
     def warn(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.warn, msg, *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.error, msg, *args, **kwargs)
 
     def exception(self, msg, *args, exc_info=True, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.exception, msg, *args, exc_info=exc_info, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.critical, msg, *args, **kwargs)
 
     def log(self, level, msg, *args, **kwargs):
-        pass
+        self._decorateWrapper(self._logger.log, msg, *args, **kwargs)
 
     @property
     def Logger(self) -> logging.Logger:
@@ -139,15 +151,15 @@ class Saver(SummaryWriter, LoggerBase):
     def Logger(self, logger: logging.Logger):
         logger = logger or logging
         self._logger = logger
-        self.setLevel = self._logger.setLevel
-        self.debug = self._logger.debug
-        self.info = self._logger.info
-        self.warning = self._logger.warning
-        self.warn = self._logger.warn
-        self.error = self._logger.error
-        self.exception = self._logger.exception
-        self.critical = self._logger.critical
-        self.log = self._logger.log
+        # self.setLevel = self._logger.setLevel
+        # self.debug = self._logger.debug
+        # self.info = self._logger.info
+        # self.warning = self._logger.warning
+        # self.warn = self._logger.warn
+        # self.error = self._logger.error
+        # self.exception = self._logger.exception
+        # self.critical = self._logger.critical
+        # self.log = self._logger.log
 
     def _dumpFile(self, path: StrPath):
         shutil.copytree(path, os.path.join(self._saveDir, "dump"), symlinks=True, ignore=lambda src, path: [x for x in path if x == "__pycache__"], ignore_dangling_symlinks=True)
@@ -256,6 +268,12 @@ class DummySaver(Saver, LoggerBase):
     @Logger.setter
     def Logger(self, logger: logging.Logger):
         raise NotImplementedError("Dummy saver does not have logger.")
+
+    def decorate(self, decorateFn: Callable[[], str]):
+        pass
+
+    def _decorateWrapper(self, fn, msg, *args, **kwargs):
+        pass
 
     def setLevel(self, level):
         pass
