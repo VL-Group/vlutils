@@ -15,6 +15,8 @@ class Handler(abc.ABC):
 
     @property
     def ShowInSummary(self) -> bool:
+        """True only if results can be represented in summary string.
+        """
         return True
 
     @property
@@ -37,6 +39,9 @@ class Handler(abc.ABC):
     def __str__(self) -> str:
         return self._format % (self.accumulated / self.length)
 
+    def __repr__(self) -> str:
+        return self.__class__.__name__ + ": " + str(self)
+
     def reset(self):
         self.accumulated = 0.0
         self.length = 0
@@ -58,10 +63,7 @@ class Meters:
             handler.reset()
 
     def summary(self, reset: bool = False):
-        result = ", ".join("%s: %s" %
-            (handler.__class__.__name__, handler)
-                for handler
-                    in self._handlers if handler.ShowInSummary)
+        result = ", ".join(repr(handler.__class__.__name__, handler) for handler in self._handlers if handler.ShowInSummary)
         if reset:
             self.reset()
         return result
