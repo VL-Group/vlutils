@@ -275,7 +275,9 @@ def configLogging(logDir: Optional[str] = None, rootName: str = "", level: Union
                 "level": level,
                 "rich_tracebacks": True,
                 "tracebacks_show_locals": False,
-                "log_time_format": r"%m/%d %H:%M"
+                "log_time_format": r"%m/%d %H:%M",
+                "markup": True,
+                "enable_link_path": False
             },
             "info_file": {
                 "class": "logging.FileHandler",
