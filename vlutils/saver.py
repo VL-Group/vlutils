@@ -57,6 +57,7 @@ class Saver(SummaryWriter, LoggerBase):
         return os.path.join(_saveDir, saveName)
 
     def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Optional[Any] = None, autoManage: bool = True, maxItems: int = 25, reserve: Optional[bool] = False, dumpFile: Optional[str] = None, activateTensorboard: bool = True):
+        self._decorateFn = None
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -96,7 +97,6 @@ class Saver(SummaryWriter, LoggerBase):
             self._url = url
         else:
             self._url = None
-        self._decorateFn = None
 
     def decorate(self, decorateFn: Callable[[], str]):
         self._decorateFn = decorateFn
