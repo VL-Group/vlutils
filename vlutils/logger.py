@@ -276,7 +276,7 @@ def configLogging(logDir: Optional[str] = None, rootName: str = "", level: Union
                 "rich_tracebacks": True,
                 "tracebacks_show_locals": False,
                 "log_time_format": r"%m/%d %H:%M",
-                "markup": True,
+                "markup": False,
                 "enable_link_path": False
             },
             "info_file": {
