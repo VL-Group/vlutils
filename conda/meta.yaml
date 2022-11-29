@@ -25,7 +25,7 @@ requirements:
 
 build:
   noarch: python
-  number: 280
+  number: 281
   include_recipe: False
 
 about:
