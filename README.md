@@ -1,6 +1,6 @@
 # Vision-Language Utilities
 
-***Working in progress. You may face inconsistencies and break-changes across different versions.***
+***Working in progress. You may face inconsistencies and breaking-changes across different versions.***
 
 <p align="center">
   <a href="https://www.python.org/">
