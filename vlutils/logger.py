@@ -207,7 +207,8 @@ class KeywordRichHandler(rich.logging.RichHandler):
         r"(?P<magenta>\b([bB]ase|[cC]all(|s|ed|ing)|[Mm]ount(|s|ed|ing))\b)",
         r"(?P<cyan>\b([mM]aster|nccl|NCCL|[mM]ain|···|[tT]otal|[tT]rain(|s|ed|ing)|[vV]alidate(|s|d)|[vV]alidat(|ing|ion)|[tT]est(|s|ed|ing))\b)",
         r"(?P<yellow>\b([lL]atest|[lL]ast|[sS]tart(|s|ed|ing)|[bB]egin(|s|ning)|[bB]egun|[cC]reate(|s|d|ing)|[gG]et(|s|ting)|[gG]ot|)\b)",
-        r"(?P<red>\b([eE]nd(|s|ed|ing)|[fF]inish(|es|ed|ing)|[kK]ill(|s|ed|ing)|[iI]terrupt(|s|ed|ting)|[qQ]uit|QUIT|[eE]xit|EXIT|[bB]ad|[wW]orse|[sS]low(|er))\b)"
+        r"(?P<red>\b([eE]nd(|s|ed|ing)|[fF]inish(|es|ed|ing)|[kK]ill(|s|ed|ing)|[iI]terrupt(|s|ed|ting)|[qQ]uit|QUIT|[eE]xit|EXIT|[bB]ad|[wW]orse|[sS]low(|er))\b)",
+        r"(?P<italic>\b([aA]ll|[aA]ny|[nN]one)\b)"
     ]
 
     def render_message(self, record: LogRecord, message: str) -> ConsoleRenderable:

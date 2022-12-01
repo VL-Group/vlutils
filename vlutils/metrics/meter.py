@@ -63,7 +63,7 @@ class Meters:
             handler.reset()
 
     def summary(self, reset: bool = False):
-        result = ", ".join(repr(handler.__class__.__name__, handler) for handler in self._handlers if handler.ShowInSummary)
+        result = ", ".join(repr(handler) for handler in self._handlers if handler.ShowInSummary)
         if reset:
             self.reset()
         return result
