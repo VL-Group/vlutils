@@ -54,6 +54,8 @@ class DefaultGroup(click.Group):
             raise ValueError('Default group accepts unknown options')
         self.ignore_unknown_options = True
         self.default_cmd_name = kwargs.pop('default', None)
+        if self.default_cmd_name is None:
+            raise ValueError("You don't have set @entryPoint.command(default=True) on any entry points.")
         self.default_if_no_args = kwargs.pop('default_if_no_args', False)
         super(DefaultGroup, self).__init__(*args, **kwargs)
 
