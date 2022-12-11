@@ -38,8 +38,8 @@ def functionFullName(function: Callable) -> str:
         return functionFullName(function.func)
     if isinstance(function, (FunctionType, MethodType)):
         return _fullName(function)
-    if (function.__str__ is not object.__str__) or (type(function).__str__ is not object.__str__):
-        return function.__str__()
+    # if (function.__str__ is not object.__str__) or (type(function).__str__ is not object.__str__):
+    #     return function.__str__()
     return _fullName(function)
 
 def relativePath(path: StrPath, start: Union[StrPath, None] = None):
