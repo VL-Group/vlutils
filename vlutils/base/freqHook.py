@@ -88,14 +88,14 @@ class FrequecyHook:
 
 
 class ChainHook:
-    def __init__(self, *hooks: Union[Callable, Dict[str, Any]]) -> None:
+    def __init__(self, *hooks: Union["ChainHook", Callable[..., Dict[str, Any]]]) -> None:
         allHooks = list()
         for h in hooks:
             if isinstance(h, ChainHook):
                 allHooks.extend(h._hooks)
             else:
                 allHooks.append(h)
-        self._hooks: List[Callable] = [h for h in allHooks if h is not None]
+        self._hooks: List[Callable[..., Dict[str, Any]]] = [h for h in allHooks if h is not None]
 
     def __call__(self, *args: Any, **kwds: Any) -> Dict[str, Any]:
         results: Dict[str, Any] = dict()
