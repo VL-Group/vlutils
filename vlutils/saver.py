@@ -244,6 +244,7 @@ class DummySaver(Saver, LoggerBase):
         else:
             self._saveDir = saveDir
         self._savePath = os.path.join(self._saveDir, saveName)
+        self._url = None
 
     @staticmethod
     def _nop(*args, **kwds):
@@ -260,6 +261,10 @@ class DummySaver(Saver, LoggerBase):
 
     def close(self):
         pass
+
+    @property
+    def TensorboardURL(self) -> str:
+        return ""
 
     @property
     def Logger(self) -> logging.Logger:
