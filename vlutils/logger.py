@@ -29,42 +29,43 @@ __all__ = [
 
 T = TypeVar("T")
 
-class LoggerBase(abc.ABC):
-    @abc.abstractmethod
-    def setLevel(self, *_, **__):
-        raise NotImplementedError
+class LoggerBase:
+    pass
+    # @abc.abstractmethod
+    # def setLevel(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def debug(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def debug(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def info(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def info(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def warning(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def warning(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def warn(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def warn(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def error(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def error(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def exception(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def exception(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def critical(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def critical(self, *_, **__):
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def log(self, *_, **__):
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def log(self, *_, **__):
+    #     raise NotImplementedError
 
 
 def trackingFunctionCalls(function: T, logger: Union[logging.Logger, LoggerBase] = logging.root) -> T:

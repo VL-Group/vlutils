@@ -13,7 +13,7 @@ import yaml
 
 from .io import rotateItems
 from .config import serialize
-from .logger import configLogging
+from .logger import configLogging, LoggerBase
 from .types import StrPath
 from .runtime import relativePath
 
@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-class Saver(SummaryWriter):
+class Saver(SummaryWriter, LoggerBase):
     """A class for load and save model
 
     Example:
