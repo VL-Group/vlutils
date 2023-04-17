@@ -13,7 +13,7 @@ import yaml
 
 from .io import rotateItems
 from .config import serialize
-from .logger import configLogging, LoggerBase
+from .logger import configLogging
 from .types import StrPath
 from .runtime import relativePath
 
@@ -22,7 +22,7 @@ __all__ = [
 ]
 
 
-class Saver(SummaryWriter, LoggerBase):
+class Saver(SummaryWriter):
     """A class for load and save model
 
     Example:
@@ -57,7 +57,6 @@ class Saver(SummaryWriter, LoggerBase):
         return os.path.join(_saveDir, saveName)
 
     def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Optional[Any] = None, autoManage: bool = True, maxItems: int = 25, reserve: Optional[bool] = False, dumpFile: Optional[str] = None, activateTensorboard: bool = True):
-        self._decorateFn = None
         if saveDir.endswith(self.NewestDir):
             autoManage = False
 
@@ -72,10 +71,19 @@ class Saver(SummaryWriter, LoggerBase):
             self._saveDir = os.path.join(saveDir, self.NewestDir)
         else:
             self._saveDir = saveDir
-        super().__init__(self._saveDir)
+        SummaryWriter.__init__(self, self._saveDir)
 
         logger = configLogging(self.SaveDir, loggerName, loggingLevel, rotateLogs=-1)
         self.Logger = logger
+
+        self.critical = self._logger.critical
+        self.debug = self._logger.debug
+        self.error = self._logger.error
+        self.exception = self._logger.exception
+        self.info = self._logger.info
+        self.log = self._logger.log
+        self.warn = self._logger.warn
+        self.warning = self._logger.warning
 
         self._savePath = os.path.join(self._saveDir, saveName)
         self.debug("Saver located at %s", relativePath(self._saveDir))
@@ -98,9 +106,6 @@ class Saver(SummaryWriter, LoggerBase):
         else:
             self._url = None
 
-    def decorate(self, decorateFn: Callable[[], str]):
-        self._decorateFn = decorateFn
-
     @property
     def TensorboardURL(self) -> str:
         if self._url is not None:
@@ -111,37 +116,6 @@ class Saver(SummaryWriter, LoggerBase):
     # Wait Logger.setter for monkey patch ↓↓
     def setLevel(self, level):
         self._logger.setLevel(level)
-
-    def _decorateWrapper(self, fn, msg, *args, **kwargs):
-        if self._decorateFn is not None:
-            msg = "[%s] " + msg
-            fn(msg, self._decorateFn(), *args, **kwargs)
-        else:
-            fn(msg, *args, **kwargs)
-
-    def debug(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.debug, msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.info, msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.warning, msg, *args, **kwargs)
-
-    def warn(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.warn, msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.error, msg, *args, **kwargs)
-
-    def exception(self, msg, *args, exc_info=True, **kwargs):
-        self._decorateWrapper(self._logger.exception, msg, *args, exc_info=exc_info, **kwargs)
-
-    def critical(self, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.critical, msg, *args, **kwargs)
-
-    def log(self, level, msg, *args, **kwargs):
-        self._decorateWrapper(self._logger.log, msg, *args, **kwargs)
 
     @property
     def Logger(self) -> logging.Logger:
@@ -235,7 +209,7 @@ class Saver(SummaryWriter, LoggerBase):
         return objs
 
 
-class DummySaver(Saver, LoggerBase):
+class DummySaver(Saver):
     def __init__(self, saveDir: StrPath, saveName: StrPath = "saved.ckpt", loggerName: str = "root", loggingLevel: str = "INFO", config: Optional[Any] = None, autoManage: bool = True, maxItems: int = 25, reserve: Optional[bool] = False, dumpFile: Optional[str] = None, activateTensorboard: bool = False):
         if saveDir.endswith(self.NewestDir):
             autoManage = False
@@ -244,7 +218,6 @@ class DummySaver(Saver, LoggerBase):
         else:
             self._saveDir = saveDir
         self._savePath = os.path.join(self._saveDir, saveName)
-        self._url = None
 
     @staticmethod
     def _nop(*args, **kwds):
@@ -263,10 +236,6 @@ class DummySaver(Saver, LoggerBase):
         pass
 
     @property
-    def TensorboardURL(self) -> str:
-        return ""
-
-    @property
     def Logger(self) -> logging.Logger:
         raise NotImplementedError("Dummy saver does not have logger.")
 
@@ -274,11 +243,6 @@ class DummySaver(Saver, LoggerBase):
     def Logger(self, logger: logging.Logger):
         raise NotImplementedError("Dummy saver does not have logger.")
 
-    def decorate(self, decorateFn: Callable[[], str]):
-        pass
-
-    def _decorateWrapper(self, fn, msg, *args, **kwargs):
-        pass
 
     def setLevel(self, level):
         pass
